@@ -1,0 +1,92 @@
+{
+  "kind": "build_request",
+  "title": "Make shared/public URL always render UI; gate only Stripe upgrade flow",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; the core analyzer experience must load even when Stripe is not configured or Stripe status checks fail.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "If you want people to test the app immediately, I can update the app so: • the full UI always loads for everyone • Stripe only blocks the upgrade button, not the entire app",
+          "User: \"Yes\"",
+          "User: \"Why when I share the url it shows nothing there\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "Opening the app URL in a fresh browser session (no stored auth, no localStorage) renders the main analyzer UI (not a blank page), regardless of Stripe configuration state.",
+        "If Stripe status queries error (network/actor error), the app still renders and shows a non-blocking warning in the subscription/upgrade area only."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Update the Pro Access/upgrade UI so that when Stripe is not configured, it does not replace the entire upgrade page with a required setup guide; instead, render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "Stripe only blocks the upgrade button, not the entire app"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When Stripe is not configured, the Pro Access screen still shows the plans grid and other UI, but paid plan action buttons are disabled and explain why.",
+        "When Stripe is configured, upgrade buttons behave as before and initiate checkout."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Hide admin setup actions from non-admin users: do not show any “Go to Admin Dashboard” navigation/button (or equivalent admin-entry affordance) unless the current caller is confirmed to be an admin.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "the admin setup flow is hidden from normal users"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A non-admin user never sees a button/link to navigate to the Admin Dashboard from the Pro Access/upgrade UI.",
+        "An admin user can still navigate to the Admin Dashboard from the same area (if that path exists today)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Ensure backend Stripe configuration status endpoints used by the public UI are safe for anonymous callers and never trap/throw; they must return a boolean status even when no identity is present.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "the full UI always loads for everyone"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Anonymous calls to the backend methods used by `useGetStripeConfigurationStatus` (and any other Stripe status checks used on initial render) reliably return `true/false` and do not throw.",
+        "If Stripe is unconfigured, status checks return `false` without error."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/src/components/ui (read-only Shadcn components).",
+    "Do not edit frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx (compose around them instead).",
+    "Backend must remain a single Motoko actor in backend/main.mo; add migration.mo only if state schema changes (avoid if not needed).",
+    "All user-facing text must be in English."
+  ],
+  "nonGoals": [
+    "Do not add new payment providers or non-Stripe checkout flows.",
+    "Do not implement third-party authentication beyond Internet Identity.",
+    "Do not redesign unrelated analyzer features, scan limits, or Gemini API key behavior."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

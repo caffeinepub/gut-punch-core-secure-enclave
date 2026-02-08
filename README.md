@@ -1,2 +1,3 @@
-# gut-punch-core-secure-enclave
-Exported from Caffeine project: Make shared/public URL always render UI; gate only Stripe upgrade flow
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

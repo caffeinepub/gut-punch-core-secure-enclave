@@ -1,0 +1,71 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-remove-any-stripe-configuration-gating-that-prevents-the-main-application-ui-header-mainanalyzer-footer-from-rendering-at-the-shared-public-url-the-core-analyzer-experience-must-load-even-when-stripe-is-not-configured-or-stripe-status-checks-fail",
+      "featureTitle": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; the core analyzer experience must load even when Stripe is not configured or Stripe status checks fail.",
+      "files": [
+        "frontend/src/components/ProAccessUpgrade.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-pro-access-upgrade-ui-so-that-when-stripe-is-not-configured-it-does-not-replace-the-entire-upgrade-page-with-a-required-setup-guide-instead-render-the-normal-plans-ui-and-disable-paid-upgrade-actions-with-clear-inline-messaging-e-g-payments-are-currently-unavailable",
+      "featureTitle": "Update the Pro Access/upgrade UI so that when Stripe is not configured, it does not replace the entire upgrade page with a required setup guide; instead, render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”).",
+      "files": [
+        "frontend/src/components/ProAccessUpgrade.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-hide-admin-setup-actions-from-non-admin-users-do-not-show-any-go-to-admin-dashboard-navigation-button-or-equivalent-admin-entry-affordance-unless-the-current-caller-is-confirmed-to-be-an-admin",
+      "featureTitle": "Hide admin setup actions from non-admin users: do not show any “Go to Admin Dashboard” navigation/button (or equivalent admin-entry affordance) unless the current caller is confirmed to be an admin.",
+      "files": [
+        "frontend/src/components/ProAccessUpgrade.tsx",
+        "frontend/src/components/SettingsPanel.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

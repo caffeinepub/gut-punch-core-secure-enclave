@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "App should display full UI at shared/public URL even if Stripe is not configured; only the upgrade/purchase flow should be gated by Stripe setup to allow users to try the app.",
+  "architectural_notes": [
+    "Move Stripe setup check behind UI render; use feature gating for upgrade/paid actions instead of blocking initial app load.",
+    "Separate admin-only Stripe setup flow from public user experience (role/route guard)."
+  ],
+  "known_issues": [
+    "Shared/public URL may show blank page due to Stripe-setup gating occurring before initial UI render, even after keys are configured."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-remove-any-stripe-configuration-gating-that-prevents-the-main-application-ui-header-mainanalyzer-footer-from-rendering-at-the-shared-public-url-the-core-analyzer-experience-must-load-even-when-stripe-is-not-configured-or-stripe-status-checks-fail",
+      "title": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; the core analyzer experience must load even when Stripe is not configured or Stripe status checks fail.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-pro-access-upgrade-ui-so-that-when-stripe-is-not-configured-it-does-not-replace-the-entire-upgrade-page-with-a-required-setup-guide-instead-render-the-normal-plans-ui-and-disable-paid-upgrade-actions-with-clear-inline-messaging-e-g-payments-are-currently-unavailable",
+      "title": "Update the Pro Access/upgrade UI so that when Stripe is not configured, it does not replace the entire upgrade page with a required setup guide; instead, render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-hide-admin-setup-actions-from-non-admin-users-do-not-show-any-go-to-admin-dashboard-navigation-button-or-equivalent-admin-entry-affordance-unless-the-current-caller-is-confirmed-to-be-an-admin",
+      "title": "Hide admin setup actions from non-admin users: do not show any “Go to Admin Dashboard” navigation/button (or equivalent admin-entry affordance) unless the current caller is confirmed to be an admin.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Render full public UI even when Stripe is unconfigured; gate only upgrade button/paid actions and hide admin setup from normal users",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Ensure backend Stripe configuration status endpoints used by the public UI are safe for anonymous callers and never trap/throw; they must return a boolean status even when no identity is present.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Make shared/public URL always render UI; gate only Stripe upgrade flow",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
