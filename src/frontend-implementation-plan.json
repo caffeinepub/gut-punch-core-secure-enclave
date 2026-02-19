@@ -1,65 +1,70 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Always render analyzer UI; gate only Stripe upgrade actions",
+  "title": "Add custom domain support and social media preview cards",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Ensure the main analyzer UI always renders; Stripe status failures only affect upgrade area with non-blocking warnings.",
+      "summary": "Add custom domain configuration interface in Admin Dashboard showing DNS setup instructions and canister URL",
       "acceptanceCriteria": [
-        "Opening the app URL in a fresh browser session (no stored auth, no localStorage) renders the main analyzer UI (not a blank page), regardless of Stripe configuration state.",
-        "If Stripe status queries error (network/actor error), the app still renders and shows a non-blocking warning in the subscription/upgrade area only."
+        "Admin Dashboard contains a new 'Custom Domain' section",
+        "Section displays step-by-step DNS configuration instructions",
+        "Shows the current canister URL for CNAME configuration",
+        "Includes verification status for custom domain setup"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Harden Stripe status React Query hooks so they never throw during initial render; on errors, return a safe boolean (e.g., false) and expose error state for UI warnings (non-blocking). Verify the component's usage instructions before implementing."
+          "path": "frontend/src/components/CustomDomainPanel.tsx",
+          "operation": "create",
+          "description": "Create a new CustomDomainPanel component that displays DNS configuration instructions for setting up a custom domain. Show the current Internet Computer canister URL (derived from window.location.host or environment) that administrators need to point their CNAME records to. Include step-by-step instructions for DNS setup (e.g., add CNAME record, configure www subdomain, wait for propagation). Display a verification status indicator showing whether a custom domain is currently active (check if current hostname differs from default canister URL). Use shadcn/ui Card, Alert, and CopyButton components for the UI. Include a note that DNS changes happen externally and may take time to propagate."
         },
         {
-          "path": "frontend/src/components/ProAccessUpgrade.tsx",
+          "path": "frontend/src/components/SettingsPanel.tsx",
           "operation": "modify",
-          "description": "Consume Stripe status hook error state to display a non-blocking warning banner/message only within the Pro Access/upgrade area, while keeping the rest of the app unaffected. Verify the component's usage instructions before implementing."
+          "description": "Add a new 'Custom Domain' tab to the existing SettingsPanel tabs array. Import and render the CustomDomainPanel component in the tab content area when the custom domain tab is selected. Ensure the tab is only visible to authenticated admin users by checking the admin status from useGetCallerUserRole or isCallerAdmin. Position the tab logically within the existing tab order (e.g., after Admin tab or in the Admin section)."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Render the normal plans UI even when Stripe is unconfigured; disable paid upgrade actions with clear inline messaging.",
+      "summary": "Add Open Graph and Twitter Card meta tags to HTML head for rich social media previews",
       "acceptanceCriteria": [
-        "When Stripe is not configured, the Pro Access screen still shows the plans grid and other UI, but paid plan action buttons are disabled and explain why.",
-        "When Stripe is configured, upgrade buttons behave as before and initiate checkout."
+        "HTML head includes og:title, og:description, og:image, and og:url meta tags",
+        "HTML head includes twitter:card, twitter:title, twitter:description, and twitter:image meta tags",
+        "Meta tags reflect the Gut Punch app identity and security scanning purpose",
+        "Preview image is appropriate for social media sharing (1200x630px recommended)"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/ProAccessUpgrade.tsx",
+          "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Remove/avoid the full-page Stripe setup guide gating (no early-return replacement UI); always render the plans grid. When Stripe is not configured (or status unknown), disable paid-plan action buttons and show inline messaging such as “Payments are currently unavailable.” Keep Free plan usable. Verify the component's usage instructions before implementing."
+          "description": "Add Open Graph meta tags in the <head> section: og:title='Gut Punch - AI-Powered Scam Detection', og:description='Protect yourself from online scams with AI-powered text analysis and real-time threat detection', og:image pointing to the generated social preview image at '/assets/generated/social-preview.dim_1200x630.png', og:url with the canonical app URL, and og:type='website'. Add Twitter Card meta tags: twitter:card='summary_large_image', twitter:title='Gut Punch - AI-Powered Scam Detection', twitter:description='Protect yourself from online scams with AI-powered text analysis and real-time threat detection', and twitter:image pointing to '/assets/generated/social-preview.dim_1200x630.png'. Ensure all tags are properly formatted and placed before the closing </head> tag."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Update checkout/session creation hook usage to ensure paid actions only run when Stripe is available; retain existing checkout initiation behavior when configured. Verify the component's usage instructions before implementing."
+          "path": "frontend/public/assets/generated/social-preview.dim_1200x630.png",
+          "operation": "create",
+          "description": "Wire the generated social media preview image (social-preview.dim_1200x630.png) as a static asset in the frontend/public/assets/generated directory. This image will be referenced by the Open Graph and Twitter Card meta tags for social sharing. The image shows the Gut Punch logo with a secure shield icon and the tagline 'AI-Powered Scam Detection' on a clean gradient background, sized at 1200x630px for optimal social media display."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Hide admin setup navigation/actions from non-admin users in the Pro Access/upgrade area.",
+      "summary": "Display shareable app URL with copy-to-clipboard functionality in a visible location",
       "acceptanceCriteria": [
-        "A non-admin user never sees a button/link to navigate to the Admin Dashboard from the Pro Access/upgrade UI.",
-        "An admin user can still navigate to the Admin Dashboard from the same area (if that path exists today)."
+        "App URL is displayed in a visible location (Header, Footer, or Settings)",
+        "Copy button triggers clipboard write and shows confirmation feedback",
+        "URL adapts if custom domain is configured"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SettingsPanel.tsx",
-          "operation": "modify",
-          "description": "Only pass/enable the Admin Dashboard navigation affordance for Pro Access when the caller is confirmed admin (using existing admin state). Ensure non-admins cannot see any \"Go to Admin Dashboard\"-style CTA in the subscription tab. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/components/ShareableUrlBanner.tsx",
+          "operation": "create",
+          "description": "Create a ShareableUrlBanner component that displays the current app URL (window.location.origin) prominently with a copy-to-clipboard button. Use shadcn/ui Button with a copy icon. Implement clipboard.writeText() to copy the URL and show a toast or inline confirmation message (e.g., 'Copied!' state change) for 2-3 seconds after copying. The URL should dynamically reflect the current hostname, so it automatically adapts if a custom domain is configured. Style the banner as a compact, non-intrusive element suitable for placement in the Footer or Settings panel."
         },
         {
-          "path": "frontend/src/components/ProAccessUpgrade.tsx",
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Guard any rendering of admin-entry UI (e.g., “Go to Admin Dashboard”) behind a confirmed admin check (use existing admin-check hook/state); if admin status is unknown/loading, default to hiding admin-entry affordances. Verify the component's usage instructions before implementing."
+          "description": "Import and render the ShareableUrlBanner component in the Footer component. Position it prominently but harmoniously with the existing branding and privacy note. Ensure the banner is visible on all pages where the Footer appears. Style it to fit the existing Footer design with appropriate spacing and alignment."
         }
       ]
     }

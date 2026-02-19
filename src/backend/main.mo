@@ -1,16 +1,28 @@
 import Stripe "stripe/stripe";
-
-import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-
+import MixinAuthorization "authorization/MixinAuthorization";
 import OutCall "http-outcalls/outcall";
+
 import Map "mo:core/Map";
 import Principal "mo:core/Principal";
 import Iter "mo:core/Iter";
+import Time "mo:core/Time";
 import Text "mo:core/Text";
+import Int "mo:core/Int";
+import Nat "mo:core/Nat";
 import Runtime "mo:core/Runtime";
+import List "mo:core/List";
+
+
 
 actor {
+  // Types
+  public type UsageStats = {
+    totalAppOpenCount : Nat;
+    uniqueUserEstimate : Nat;
+    recentAppOpenEvents : [Time.Time];
+  };
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -108,13 +120,6 @@ actor {
     stripeConfiguration := ?config;
   };
 
-  func getStripeConfiguration() : Stripe.StripeConfiguration {
-    switch (stripeConfiguration) {
-      case (null) { Runtime.trap("Stripe needs to be first configured") };
-      case (?value) { value };
-    };
-  };
-
   public shared ({ caller }) func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only authenticated users can check session status");
@@ -135,8 +140,68 @@ actor {
 
   // Authentication helper - safe for all callers including anonymous
   public query func authenticateUser(authToken : Text) : async Bool {
-    // Returns false for empty/invalid tokens instead of trapping
-    // This allows anonymous callers to safely check authentication status
     authToken.size() > 0;
+  };
+
+  // Usage Tracking
+  var totalAppOpenCount = 0;
+  let uniqueUserCheck = Map.empty<Principal, ()>();
+  let usageEvents = List.empty<Time.Time>();
+
+  public shared ({ caller }) func trackAppOpen() : async () {
+    totalAppOpenCount += 1;
+
+    if (caller.isAnonymous()) {
+      return;
+    };
+
+    let isNewUser = not uniqueUserCheck.containsKey(caller);
+    if (isNewUser) {
+      uniqueUserCheck.add(caller, ());
+    };
+
+    let now = Time.now();
+    usageEvents.add(now);
+
+    let maxEvents = 500;
+    let currentSize = usageEvents.size();
+    if (currentSize > maxEvents) {
+      let dropCount = currentSize - maxEvents;
+      let dropped = usageEvents.values().drop(dropCount);
+      usageEvents.clear();
+      for (event in dropped) {
+        usageEvents.add(event);
+      };
+    };
+  };
+
+  // Admin-only query to retrieve stats
+  public shared ({ caller }) func getUsageStats() : async UsageStats {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Only administrators can view usage statistics");
+    };
+
+    let currentTime = Time.now();
+    let threshold = 365 * 24 * 60 * 60 * 1_000_000_000; // 1 year in nanoseconds
+
+    // Filter events to keep only those from the last year
+    let recentEvents = usageEvents.values().filter(
+      func(event) { (currentTime - event : Int) < threshold }
+    );
+
+    // Convert filtered events to array
+    let recentEventsArray = recentEvents.toArray();
+    {
+      totalAppOpenCount;
+      uniqueUserEstimate = uniqueUserCheck.size();
+      recentAppOpenEvents = recentEventsArray;
+    };
+  };
+
+  func getStripeConfiguration() : Stripe.StripeConfiguration {
+    switch (stripeConfiguration) {
+      case (null) { Runtime.trap("Stripe needs to be first configured") };
+      case (?value) { value };
+    };
   };
 };

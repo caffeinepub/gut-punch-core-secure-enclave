@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-any-stripe-configuration-gating-that-prevents-the-main-application-ui-header-mainanalyzer-footer-from-rendering-at-the-shared-public-url-the-core-analyzer-experience-must-load-even-when-stripe-is-not-configured-or-stripe-status-checks-fail",
-      "featureTitle": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; the core analyzer experience must load even when Stripe is not configured or Stripe status checks fail.",
+      "featureId": "feature-add-custom-domain-configuration-interface-in-the-admin-dashboard-that-allows-administrators-to-view-instructions-for-setting-up-a-custom-domain-dns-cname-records-pointing-to-the-internet-computer-canister-url-and-displays-the-current-domain-status",
+      "featureTitle": "Add custom domain configuration interface in the Admin Dashboard that allows administrators to view instructions for setting up a custom domain (DNS CNAME records pointing to the Internet Computer canister URL) and displays the current domain status",
       "files": [
-        "frontend/src/components/ProAccessUpgrade.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/CustomDomainPanel.tsx",
+        "frontend/src/components/SettingsPanel.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -24,11 +24,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-pro-access-upgrade-ui-so-that-when-stripe-is-not-configured-it-does-not-replace-the-entire-upgrade-page-with-a-required-setup-guide-instead-render-the-normal-plans-ui-and-disable-paid-upgrade-actions-with-clear-inline-messaging-e-g-payments-are-currently-unavailable",
-      "featureTitle": "Update the Pro Access/upgrade UI so that when Stripe is not configured, it does not replace the entire upgrade page with a required setup guide; instead, render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”).",
+      "featureId": "feature-add-open-graph-and-twitter-card-meta-tags-to-the-application-html-head-to-enable-rich-social-media-previews-when-sharing-the-app-link-including-title-description-and-preview-image",
+      "featureTitle": "Add Open Graph and Twitter Card meta tags to the application HTML head to enable rich social media previews when sharing the app link, including title, description, and preview image",
       "files": [
-        "frontend/src/components/ProAccessUpgrade.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/index.html"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -46,11 +45,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-hide-admin-setup-actions-from-non-admin-users-do-not-show-any-go-to-admin-dashboard-navigation-button-or-equivalent-admin-entry-affordance-unless-the-current-caller-is-confirmed-to-be-an-admin",
-      "featureTitle": "Hide admin setup actions from non-admin users: do not show any “Go to Admin Dashboard” navigation/button (or equivalent admin-entry affordance) unless the current caller is confirmed to be an admin.",
+      "featureId": "feature-display-the-shareable-app-url-prominently-in-the-application-interface-with-a-copy-to-clipboard-button-to-make-sharing-easier-for-users",
+      "featureTitle": "Display the shareable app URL prominently in the application interface with a copy-to-clipboard button to make sharing easier for users",
       "files": [
-        "frontend/src/components/ProAccessUpgrade.tsx",
-        "frontend/src/components/SettingsPanel.tsx"
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/ShareableUrlBanner.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",

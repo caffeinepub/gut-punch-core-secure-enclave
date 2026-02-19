@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Settings, Wifi, WifiOff, Trash2, Lock, Key, Crown, CreditCard, ExternalLink, CheckCircle2, XCircle, Shield, User, LogIn, LogOut, Loader2 } from 'lucide-react';
+import { Settings, Wifi, WifiOff, Trash2, Lock, Key, Crown, CreditCard, ExternalLink, CheckCircle2, XCircle, Shield, User, LogIn, LogOut, Loader2, Globe } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { toast } from 'sonner';
 import { firebaseService } from '../lib/firebase';
@@ -17,6 +17,8 @@ import { useIsCallerAdmin } from '../hooks/useQueries';
 import ApiKeyModal from './ApiKeyModal';
 import ProAccessUpgrade from './ProAccessUpgrade';
 import AdminDashboard from './AdminDashboard';
+import UsageAnalyticsPanel from './UsageAnalyticsPanel';
+import CustomDomainPanel from './CustomDomainPanel';
 
 export default function SettingsPanel() {
     const { settings, updateSettings, clearHistory, history, geminiApiKey, isPro, subscriptionInfo } = useApp();
@@ -101,17 +103,23 @@ export default function SettingsPanel() {
                 </CardHeader>
                 <CardContent>
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
-                        <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                        <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-4' : 'grid-cols-2'}`}>
                             <TabsTrigger value="general">General</TabsTrigger>
                             <TabsTrigger value="subscription">
                                 <Crown className="mr-2 h-4 w-4" />
                                 Pro Access
                             </TabsTrigger>
                             {isAdmin && (
-                                <TabsTrigger value="admin">
-                                    <Shield className="mr-2 h-4 w-4" />
-                                    Admin
-                                </TabsTrigger>
+                                <>
+                                    <TabsTrigger value="domain">
+                                        <Globe className="mr-2 h-4 w-4" />
+                                        Custom Domain
+                                    </TabsTrigger>
+                                    <TabsTrigger value="admin">
+                                        <Shield className="mr-2 h-4 w-4" />
+                                        Admin
+                                    </TabsTrigger>
+                                </>
                             )}
                         </TabsList>
 
@@ -241,12 +249,11 @@ export default function SettingsPanel() {
                                                             ❌
                                                         </Badge>
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground">No API key configured</p>
+                                                    <p className="text-xs text-muted-foreground">Configure your API key to enable chat</p>
                                                 </div>
                                             </>
                                         )}
                                     </div>
-                                    {/* Button is always enabled for API key configuration */}
                                     <Button
                                         onClick={() => setShowApiKeyModal(true)}
                                         variant="outline"
@@ -254,73 +261,26 @@ export default function SettingsPanel() {
                                         className="border-primary/30"
                                     >
                                         <Key className="mr-2 h-4 w-4" />
-                                        Configure API Key
+                                        {isGeminiConfigured ? 'Update Key' : 'Add Key'}
                                     </Button>
                                 </div>
 
-                                {/* Inline Instructions */}
+                                {/* Info Alert */}
                                 <Alert className="border-primary/20 bg-primary/5">
                                     <Lock className="h-4 w-4 text-primary" />
-                                    <AlertDescription className="text-xs space-y-2">
-                                        <p className="font-semibold text-foreground">How to get your Gemini API key:</p>
-                                        <ol className="list-decimal list-inside space-y-1 ml-2 text-muted-foreground">
-                                            <li>Visit Google AI Studio to generate a new API key</li>
-                                            <li>Sign in with your Google account</li>
-                                            <li>Click "Get API Key" and copy your key (starts with "AIza")</li>
-                                            <li>Click "Configure API Key" above to add it</li>
-                                        </ol>
-                                        <a
-                                            href="https://makersuite.google.com/app/apikey"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-primary hover:underline font-medium mt-2"
-                                        >
-                                            Generate Gemini API Key
-                                            <ExternalLink className="h-3 w-3" />
-                                        </a>
+                                    <AlertDescription className="text-sm">
+                                        Your API key is stored locally in your browser and never sent to our servers.
+                                        {!isPro && (
+                                            <span className="block mt-1 text-muted-foreground">
+                                                Note: Pro Access subscription required to use Gemini chat features.
+                                            </span>
+                                        )}
                                     </AlertDescription>
                                 </Alert>
-
-                                {/* Status Information */}
-                                <p className="text-xs text-muted-foreground">
-                                    {!isPro 
-                                        ? '🔒 You can configure your API key now, but you need to upgrade to Pro Access to use Gemini AI chat functionality.'
-                                        : isGeminiConfigured
-                                            ? '✅ Your API key is stored securely in your browser. Chat interface is now enabled and ready to use.'
-                                            : '⚠️ Add your Gemini API key to enable enhanced chat functionality with AI responses.'
-                                    }
-                                </p>
-                            </div>
-
-                            {/* Firebase Status */}
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Cloud Connection Status</Label>
-                                <div className="flex items-center gap-2">
-                                    {isFirebaseAvailable ? (
-                                        <>
-                                            <Wifi className="h-4 w-4 text-primary" />
-                                            <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
-                                                Connected
-                                            </Badge>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <WifiOff className="h-4 w-4 text-muted-foreground" />
-                                            <Badge variant="outline" className="border-muted/30">
-                                                Offline Mode
-                                            </Badge>
-                                        </>
-                                    )}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {isFirebaseAvailable
-                                        ? 'Cloud features enabled. Chat history synced to Firebase.'
-                                        : 'Operating in offline mode. All data stored locally in your browser.'}
-                                </p>
                             </div>
 
                             {/* Analysis Mode */}
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 <Label className="text-sm font-medium font-mono uppercase tracking-wider">Analysis Mode</Label>
                                 <Select value={settings.mode} onValueChange={handleModeChange}>
                                     <SelectTrigger className="border-primary/30 bg-background/50">
@@ -329,35 +289,35 @@ export default function SettingsPanel() {
                                     <SelectContent>
                                         <SelectItem value="paranoid">
                                             <div className="flex items-center gap-2">
-                                                <Shield className="h-4 w-4 text-destructive" />
-                                                <span>Paranoid - Maximum Security</span>
+                                                <span className="font-mono">PARANOID</span>
+                                                <Badge variant="destructive" className="text-xs">High Alert</Badge>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="balanced">
                                             <div className="flex items-center gap-2">
-                                                <Shield className="h-4 w-4 text-primary" />
-                                                <span>Balanced - Recommended</span>
+                                                <span className="font-mono">BALANCED</span>
+                                                <Badge variant="outline" className="text-xs">Recommended</Badge>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="vent">
                                             <div className="flex items-center gap-2">
-                                                <Shield className="h-4 w-4 text-muted-foreground" />
-                                                <span>Vent - Minimal Filtering</span>
+                                                <span className="font-mono">VENT</span>
+                                                <Badge variant="secondary" className="text-xs">Relaxed</Badge>
                                             </div>
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground">
-                                    {settings.mode === 'paranoid' && 'Maximum threat detection. Flags even minor concerns.'}
-                                    {settings.mode === 'balanced' && 'Balanced approach. Recommended for most users.'}
-                                    {settings.mode === 'vent' && 'Minimal filtering. Best for casual venting.'}
+                                    {settings.mode === 'paranoid' && 'Maximum sensitivity - flags all potential risks'}
+                                    {settings.mode === 'balanced' && 'Balanced detection - recommended for most users'}
+                                    {settings.mode === 'vent' && 'Minimal alerts - for casual venting'}
                                 </p>
                             </div>
 
-                            {/* Debounce Delay */}
-                            <div className="space-y-2">
+                            {/* Response Time */}
+                            <div className="space-y-3">
                                 <Label className="text-sm font-medium font-mono uppercase tracking-wider">
-                                    Analysis Delay: {settings.debounceMs}ms
+                                    Response Time: {settings.debounceMs}ms
                                 </Label>
                                 <Slider
                                     value={[settings.debounceMs]}
@@ -368,53 +328,82 @@ export default function SettingsPanel() {
                                     className="py-4"
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Time to wait after typing stops before analyzing. Lower = faster, higher = less CPU usage.
+                                    Lower values = faster analysis, higher values = less frequent updates
                                 </p>
                             </div>
 
-                            {/* Clear History */}
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Data Management</Label>
-                                <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background/50 p-3">
-                                    <div>
-                                        <p className="text-sm font-medium">Analysis History</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {history.length} {history.length === 1 ? 'entry' : 'entries'} stored locally
-                                        </p>
-                                    </div>
-                                    <Button
-                                        onClick={handleClearHistory}
-                                        variant="outline"
-                                        size="sm"
-                                        className="border-destructive/30 text-destructive hover:bg-destructive/10"
-                                        disabled={history.length === 0}
-                                    >
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Clear History
-                                    </Button>
+                            {/* Firebase Status */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Cloud Storage Status</Label>
+                                <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-background/50 p-3">
+                                    {isFirebaseAvailable ? (
+                                        <>
+                                            <Wifi className="h-4 w-4 text-primary" />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium">Connected</p>
+                                                <p className="text-xs text-muted-foreground">History sync enabled</p>
+                                            </div>
+                                            <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
+                                                ONLINE
+                                            </Badge>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <WifiOff className="h-4 w-4 text-muted-foreground" />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium">Offline Mode</p>
+                                                <p className="text-xs text-muted-foreground">Using local storage only</p>
+                                            </div>
+                                            <Badge variant="outline" className="border-muted/30">
+                                                LOCAL
+                                            </Badge>
+                                        </>
+                                    )}
                                 </div>
+                            </div>
+
+                            {/* Clear History */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Data Management</Label>
+                                <Button
+                                    onClick={handleClearHistory}
+                                    variant="destructive"
+                                    className="w-full"
+                                    disabled={history.length === 0}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Clear All History ({history.length} items)
+                                </Button>
+                                <p className="text-xs text-muted-foreground">
+                                    Permanently delete all stored analysis history from this device
+                                </p>
                             </div>
                         </TabsContent>
 
                         <TabsContent value="subscription" className="mt-6">
-                            <ProAccessUpgrade onNavigateToAdmin={isAdmin ? handleNavigateToAdmin : undefined} />
+                            <ProAccessUpgrade onNavigateToAdmin={handleNavigateToAdmin} />
                         </TabsContent>
 
                         {isAdmin && (
-                            <TabsContent value="admin" className="mt-6">
-                                <AdminDashboard />
-                            </TabsContent>
+                            <>
+                                <TabsContent value="domain" className="mt-6">
+                                    <CustomDomainPanel />
+                                </TabsContent>
+
+                                <TabsContent value="admin" className="space-y-6 mt-6">
+                                    <AdminDashboard />
+                                    <UsageAnalyticsPanel />
+                                </TabsContent>
+                            </>
                         )}
                     </Tabs>
                 </CardContent>
             </Card>
 
-            {showApiKeyModal && (
-                <ApiKeyModal
-                    open={showApiKeyModal}
-                    onOpenChange={setShowApiKeyModal}
-                />
-            )}
+            <ApiKeyModal
+                open={showApiKeyModal}
+                onOpenChange={setShowApiKeyModal}
+            />
         </>
     );
 }

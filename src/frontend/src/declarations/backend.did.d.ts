@@ -31,6 +31,7 @@ export type StripeSessionStatus = {
     'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
   } |
   { 'failed' : { 'error' : string } };
+export type Time = bigint;
 export interface TransformationInput {
   'context' : Uint8Array,
   'response' : http_request_result,
@@ -39,6 +40,11 @@ export interface TransformationOutput {
   'status' : bigint,
   'body' : Uint8Array,
   'headers' : Array<http_header>,
+}
+export interface UsageStats {
+  'uniqueUserEstimate' : bigint,
+  'recentAppOpenEvents' : Array<Time>,
+  'totalAppOpenCount' : bigint,
 }
 export interface UserProfile {
   'name' : string,
@@ -68,11 +74,13 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getProducts' : ActorMethod<[], Array<Product>>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getUsageStats' : ActorMethod<[], UsageStats>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
+  'trackAppOpen' : ActorMethod<[], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateProduct' : ActorMethod<[Product], undefined>,
 }

@@ -2,14 +2,18 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tanstack/react-router';
 import { AppProvider } from './contexts/AppContext';
+import { useTrackAppOpenOnce } from './hooks/useTrackAppOpenOnce';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import MainAnalyzer from './components/MainAnalyzer';
 import PaymentSuccess from './components/PaymentSuccess';
 import PaymentFailure from './components/PaymentFailure';
 
-const rootRoute = createRootRoute({
-    component: () => (
+function RootLayout() {
+    // Track app open once per session
+    useTrackAppOpenOnce();
+
+    return (
         <div className="flex min-h-screen flex-col bg-background text-foreground">
             <Header />
             <main className="flex-1">
@@ -18,7 +22,11 @@ const rootRoute = createRootRoute({
             <Footer />
             <Toaster />
         </div>
-    ),
+    );
+}
+
+const rootRoute = createRootRoute({
+    component: RootLayout,
 });
 
 const indexRoute = createRoute({

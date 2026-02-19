@@ -1,35 +1,31 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "App should display full UI at shared/public URL even if Stripe is not configured; only the upgrade/purchase flow should be gated by Stripe setup to allow users to try the app.",
-  "architectural_notes": [
-    "Move Stripe setup check behind UI render; use feature gating for upgrade/paid actions instead of blocking initial app load.",
-    "Separate admin-only Stripe setup flow from public user experience (role/route guard)."
-  ],
-  "known_issues": [
-    "Shared/public URL may show blank page due to Stripe-setup gating occurring before initial UI render, even after keys are configured."
-  ],
-  "isFixRequest": true,
+  "summary": "Building a shareable app with custom domain and social media preview features",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Social media preview card showing the Gut Punch logo with a secure shield icon and tagline 'AI-Powered Scam Detection' on a clean gradient background (social-preview.dim_1200x630.png)",
   "existing_features": [
     {
-      "id": "feature-remove-any-stripe-configuration-gating-that-prevents-the-main-application-ui-header-mainanalyzer-footer-from-rendering-at-the-shared-public-url-the-core-analyzer-experience-must-load-even-when-stripe-is-not-configured-or-stripe-status-checks-fail",
-      "title": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; the core analyzer experience must load even when Stripe is not configured or Stripe status checks fail.",
+      "id": "feature-add-custom-domain-configuration-interface-in-the-admin-dashboard-that-allows-administrators-to-view-instructions-for-setting-up-a-custom-domain-dns-cname-records-pointing-to-the-internet-computer-canister-url-and-displays-the-current-domain-status",
+      "title": "Add custom domain configuration interface in the Admin Dashboard that allows administrators to view instructions for setting up a custom domain (DNS CNAME records pointing to the Internet Computer canister URL) and displays the current domain status",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-pro-access-upgrade-ui-so-that-when-stripe-is-not-configured-it-does-not-replace-the-entire-upgrade-page-with-a-required-setup-guide-instead-render-the-normal-plans-ui-and-disable-paid-upgrade-actions-with-clear-inline-messaging-e-g-payments-are-currently-unavailable",
-      "title": "Update the Pro Access/upgrade UI so that when Stripe is not configured, it does not replace the entire upgrade page with a required setup guide; instead, render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”).",
+      "id": "feature-add-open-graph-and-twitter-card-meta-tags-to-the-application-html-head-to-enable-rich-social-media-previews-when-sharing-the-app-link-including-title-description-and-preview-image",
+      "title": "Add Open Graph and Twitter Card meta tags to the application HTML head to enable rich social media previews when sharing the app link, including title, description, and preview image",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-hide-admin-setup-actions-from-non-admin-users-do-not-show-any-go-to-admin-dashboard-navigation-button-or-equivalent-admin-entry-affordance-unless-the-current-caller-is-confirmed-to-be-an-admin",
-      "title": "Hide admin setup actions from non-admin users: do not show any “Go to Admin Dashboard” navigation/button (or equivalent admin-entry affordance) unless the current caller is confirmed to be an admin.",
+      "id": "feature-display-the-shareable-app-url-prominently-in-the-application-interface-with-a-copy-to-clipboard-button-to-make-sharing-easier-for-users",
+      "title": "Display the shareable app URL prominently in the application interface with a copy-to-clipboard button to make sharing easier for users",
       "reqIds": [
         "REQ-3"
       ],
@@ -39,20 +35,18 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Render full public UI even when Stripe is unconfigured; gate only upgrade button/paid actions and hide admin setup from normal users",
+      "summary": "Custom domain setup",
       "reqIds": [],
-      "status": "in_progress"
+      "status": "pending"
     },
     {
-      "id": "AR-5",
-      "summary": "Ensure backend Stripe configuration status endpoints used by the public UI are safe for anonymous callers and never trap/throw; they must return a boolean status even when no identity is present.",
-      "reqIds": [
-        "REQ-4"
-      ],
+      "id": "AR-2",
+      "summary": "Social media preview cards",
+      "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Make shared/public URL always render UI; gate only Stripe upgrade flow",
+  "projectName": "Gut Punch",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

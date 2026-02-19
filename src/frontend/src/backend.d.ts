@@ -23,6 +23,7 @@ export interface TransformationOutput {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export type Time = bigint;
 export interface ShoppingItem {
     productName: string;
     currency: string;
@@ -50,6 +51,11 @@ export interface StripeConfiguration {
     allowedCountries: Array<string>;
     secretKey: string;
 }
+export interface UsageStats {
+    uniqueUserEstimate: bigint;
+    recentAppOpenEvents: Array<Time>;
+    totalAppOpenCount: bigint;
+}
 export interface UserProfile {
     name: string;
     email?: string;
@@ -74,11 +80,13 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getProducts(): Promise<Array<Product>>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
+    getUsageStats(): Promise<UsageStats>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
+    trackAppOpen(): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateProduct(product: Product): Promise<void>;
 }

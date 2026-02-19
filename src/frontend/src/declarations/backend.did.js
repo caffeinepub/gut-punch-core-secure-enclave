@@ -38,6 +38,12 @@ export const StripeSessionStatus = IDL.Variant({
   }),
   'failed' : IDL.Record({ 'error' : IDL.Text }),
 });
+export const Time = IDL.Int;
+export const UsageStats = IDL.Record({
+  'uniqueUserEstimate' : IDL.Nat,
+  'recentAppOpenEvents' : IDL.Vec(Time),
+  'totalAppOpenCount' : IDL.Nat,
+});
 export const StripeConfiguration = IDL.Record({
   'allowedCountries' : IDL.Vec(IDL.Text),
   'secretKey' : IDL.Text,
@@ -76,6 +82,7 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+  'getUsageStats' : IDL.Func([], [UsageStats], []),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -85,6 +92,7 @@ export const idlService = IDL.Service({
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
+  'trackAppOpen' : IDL.Func([], [], []),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
@@ -126,6 +134,12 @@ export const idlFactory = ({ IDL }) => {
     }),
     'failed' : IDL.Record({ 'error' : IDL.Text }),
   });
+  const Time = IDL.Int;
+  const UsageStats = IDL.Record({
+    'uniqueUserEstimate' : IDL.Nat,
+    'recentAppOpenEvents' : IDL.Vec(Time),
+    'totalAppOpenCount' : IDL.Nat,
+  });
   const StripeConfiguration = IDL.Record({
     'allowedCountries' : IDL.Vec(IDL.Text),
     'secretKey' : IDL.Text,
@@ -161,6 +175,7 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+    'getUsageStats' : IDL.Func([], [UsageStats], []),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -170,6 +185,7 @@ export const idlFactory = ({ IDL }) => {
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
+    'trackAppOpen' : IDL.Func([], [], []),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],

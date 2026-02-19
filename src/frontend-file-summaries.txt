@@ -1,15 +1,15 @@
 {
-  "frontend/src/App.tsx": "Main application component with TanStack Router integration for payment success/failure routes, ThemeProvider forced to dark mode, and AppProvider context wrapping.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router integration, ThemeProvider, and app-open tracking via useTrackAppOpenOnce hook in the root layout component.",
   "frontend/src/contexts/AppContext.tsx": "Enhanced React Context provider with Stripe publishable key management, subscription status tracking, daily scan limits for free tier, and stable memoized state for all app-wide settings including payment configuration.",
   "frontend/src/lib/analyzer.ts": "Enhanced analysis engine with improved sanitization using NFKC normalization, stricter truncation, control character removal, safer regex usage, deduplication logic, and comprehensive educational context for detected patterns.",
   "frontend/src/components/Header.tsx": "Gut-Punch branded header with lock icon, title, and subtitle displaying the Core Secure Enclave branding without any demo mode indicators.",
-  "frontend/src/components/Footer.tsx": "Footer component with secure thread indicator, privacy messaging about local analysis, and caffeine.ai attribution without any demo deployment notices.",
+  "frontend/src/components/Footer.tsx": "Footer component with ShareableUrlBanner integration, secure thread indicator, privacy messaging, dynamic copyright year, and caffeine.ai attribution with UTM tracking parameters.",
   "frontend/src/components/MainAnalyzer.tsx": "Main application interface with feature gating for free tier daily scan limits, Pro Access upgrade prompts, and conditional rendering of premium features like unlimited scans and full metrics.",
   "frontend/src/components/RiskMeter.tsx": "Visual risk assessment component with SecureDraft AI styling, monospace fonts, and neon green accent colors for risk level indicators.",
   "frontend/src/components/AlertList.tsx": "Displays detected suspicious patterns with SecureDraft AI theme, monospace typography, and neon green accent borders.",
-  "frontend/src/components/SettingsPanel.tsx": "Enhanced settings panel with three-tab layout (General, Pro Access, Admin) that passes admin navigation callback to ProAccessUpgrade only when the user is confirmed admin, and correctly uses ApiKeyModal with open/onOpenChange props.",
+  "frontend/src/components/SettingsPanel.tsx": "Enhanced settings panel with four-tab layout (General, Pro Access, Custom Domain, Admin) that includes the new CustomDomainPanel in a dedicated tab visible only to authenticated administrators, with corrected ApiKeyModal props (open/onOpenChange).",
   "frontend/src/components/HistoryVault.tsx": "History management interface with improved accessibility, haptic feedback, better formatting, and enhanced user experience.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend integration with hardened Stripe configuration status checking that never throws on initial render, returning false on errors with proper error handling for all query operations.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend integration including user profiles, admin checks, products, Stripe configuration, and new usage analytics hooks (trackAppOpen mutation and getUsageStats query) with proper error handling.",
   "frontend/src/index.css": "Global styles with OKLCH color system customized for SecureDraft AI theme featuring deep navy background (#0A0C16 to #101424) and neon green accents (#00FFB0), with Inter/JetBrains Mono typography and neon glow effects.",
   "frontend/src/hooks/usePersistedState.ts": "Custom hook for persisting state to localStorage with serialization resilience and error handling.",
   "frontend/src/hooks/useDebounce.ts": "Custom hook for debouncing values with proper cleanup hygiene to prevent memory leaks.",
@@ -26,5 +26,10 @@
   "frontend/src/components/PaymentSuccess.tsx": "Payment success confirmation screen that activates Pro Access subscription in local state, displays welcome message with feature list, and provides navigation back to the main application.",
   "frontend/src/components/PaymentFailure.tsx": "Payment cancellation/failure screen with retry options and clear user feedback for unsuccessful payment attempts.",
   "frontend/src/components/AdminDashboard.tsx": "Admin-only Stripe configuration dashboard with secure transmission of both publishable and secret keys, real-time status indicators using useIsStripeConfigured hook, comprehensive validation, environment matching checks, and complete visual feedback for configuration success or errors.",
-  "frontend/src/components/StripeConfigurationGuide.tsx": "New guided walkthrough component with step-by-step instructions for configuring Stripe API keys, including progress tracking, external links to Stripe Dashboard, and contextual help for test vs live keys."
+  "frontend/src/components/StripeConfigurationGuide.tsx": "New guided walkthrough component with step-by-step instructions for configuring Stripe API keys, including progress tracking, external links to Stripe Dashboard, and contextual help for test vs live keys.",
+  "frontend/src/hooks/useTrackAppOpenOnce.ts": "Custom hook that tracks app open events once per browser session using sessionStorage deduplication and best-effort mutation with silent failure handling.",
+  "frontend/src/components/UsageAnalyticsPanel.tsx": "Admin-only usage analytics panel displaying total app opens, unique user estimates, and recent activity list with refresh functionality, loading states, and error handling.",
+  "frontend/src/components/CustomDomainPanel.tsx": "Admin-only panel displaying DNS configuration instructions for custom domain setup with step-by-step guidance, CNAME record details, current status verification, and external documentation links.",
+  "frontend/src/components/ShareableUrlBanner.tsx": "Compact banner component displaying the current app URL with copy-to-clipboard functionality, toast notifications, and responsive layout for easy sharing.",
+  "frontend/index.html": "HTML entry point with comprehensive Open Graph and Twitter Card meta tags for rich social media previews featuring Gut Punch branding and scam detection messaging."
 }

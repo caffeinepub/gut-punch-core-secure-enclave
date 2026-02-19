@@ -1,52 +1,26 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T22:37:48.491Z",
-  "summary": "Diff adds a backend boolean `isStripeConfigured()` endpoint and hardens the frontend `useIsStripeConfigured` hook to return `false` on errors. Pro upgrade UI now checks Stripe config before attempting checkout and admin navigation is conditionally wired via `useIsCallerAdmin`. However, the diff does not clearly show removal of any app-level Stripe gating for initial UI render, nor does it clearly implement the required inline disabling/messaging behavior for paid upgrade actions when Stripe is unconfigured.",
-  "missing_requirements": [
-    {
-      "id": "REQ-1",
-      "requirement": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; app must render even when Stripe is not configured or Stripe status checks fail; show only a non-blocking warning in subscription/upgrade area on Stripe status errors.",
-      "reason": "The diff shows a hardened Stripe status query (`useIsStripeConfigured`) but does not show changes in the app/root routing layer (e.g., `App.tsx` or public URL entry) that remove any existing Stripe gating for rendering the main UI. Also, while errors are caught and converted to `false`, there is no clear evidence of a non-blocking warning being rendered in the upgrade/subscription area specifically when the status query errors.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/components/ProAccessUpgrade.tsx"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "When Stripe is not configured, Pro Access screen must still render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”), without replacing the page with a setup guide.",
-      "reason": "`ProAccessUpgrade` includes a guard in `handleUpgrade` that shows a toast error when Stripe is not configured, but the diff does not show plan action buttons being disabled with inline explanatory messaging while still rendering the plans grid. The snippet only evidences toast-based blocking at click time, not disabled actions/inline messaging.",
-      "evidence": [
-        "frontend/src/components/ProAccessUpgrade.tsx"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-19T21:01:46.864Z",
+  "summary": "The diff implements all three requirements (REQ-1, REQ-2, REQ-3) with comprehensive coverage. REQ-1 is fulfilled through CustomDomainPanel.tsx with DNS instructions, canister URL display, and status verification. REQ-2 is addressed via Open Graph and Twitter Card meta tags in frontend/index.html. REQ-3 is implemented through ShareableUrlBanner.tsx integrated into Footer.tsx with copy-to-clipboard functionality. All acceptance criteria appear to be met based on the available evidence.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Added a project tracking/state file (project_state.json) describing feature requests and statuses.",
-      "reason": "Not requested in the BuildRequest; appears to be internal/project-management metadata rather than an app requirement.",
+      "description": "Four-tab layout in SettingsPanel including 'General', 'Pro Access', 'Custom Domain', and 'Admin' tabs",
+      "reason": "The BuildRequest only mentions adding a Custom Domain section to the Admin Dashboard. The diff shows CustomDomainPanel is added as a separate tab in SettingsPanel, but the requirement specified it should be in the Admin Dashboard specifically. The implementation appears to place it in a dedicated tab rather than within the AdminDashboard component.",
       "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "description": "Added/expanded AdminDashboard client-side validation rules and UI behaviors (e.g., key format/length checks, country parsing).",
-      "reason": "BuildRequest focuses on public UI rendering and upgrade gating; it does not request new validation/UX logic for the admin dashboard setup form.",
-      "evidence": [
-        "frontend/src/components/AdminDashboard.tsx"
+        "frontend/src/components/SettingsPanel.tsx"
       ]
     }
   ],
-  "confidence": 0.55,
+  "confidence": 0.85,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/AdminDashboard.tsx",
-    "frontend/src/components/ProAccessUpgrade.tsx",
+    "frontend/index.html",
+    "frontend/src/components/CustomDomainPanel.tsx",
+    "frontend/src/components/Footer.tsx",
     "frontend/src/components/SettingsPanel.tsx",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/components/ShareableUrlBanner.tsx",
     "project_state.json"
   ]
 }

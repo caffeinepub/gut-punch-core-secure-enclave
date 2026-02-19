@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { UserProfile, Product, ShoppingItem, StripeConfiguration } from '../backend';
+import type { UserProfile, Product, ShoppingItem, StripeConfiguration, UsageStats } from '../backend';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -144,5 +144,41 @@ export function useGetStripeSessionStatus() {
             if (!actor) throw new Error('Actor not available');
             return actor.getStripeSessionStatus(sessionId);
         },
+    });
+}
+
+// Usage Analytics Queries
+export function useTrackAppOpen() {
+    const { actor } = useActor();
+
+    return useMutation({
+        mutationFn: async () => {
+            if (!actor) {
+                // Fail silently if actor not available
+                return;
+            }
+            try {
+                await actor.trackAppOpen();
+            } catch (error) {
+                // Fail silently - don't break UI
+                console.error('Failed to track app open:', error);
+            }
+        },
+        retry: false,
+    });
+}
+
+export function useGetUsageStats() {
+    const { actor, isFetching: actorFetching } = useActor();
+    const { data: isAdmin } = useIsCallerAdmin();
+
+    return useQuery<UsageStats>({
+        queryKey: ['usageStats'],
+        queryFn: async () => {
+            if (!actor) throw new Error('Actor not available');
+            return actor.getUsageStats();
+        },
+        enabled: !!actor && !actorFetching && isAdmin === true,
+        retry: false,
     });
 }

@@ -105,6 +105,7 @@ export interface TransformationOutput {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export type Time = bigint;
 export interface ShoppingItem {
     productName: string;
     currency: string;
@@ -132,6 +133,11 @@ export interface StripeConfiguration {
     allowedCountries: Array<string>;
     secretKey: string;
 }
+export interface UsageStats {
+    uniqueUserEstimate: bigint;
+    recentAppOpenEvents: Array<Time>;
+    totalAppOpenCount: bigint;
+}
 export interface UserProfile {
     name: string;
     email?: string;
@@ -157,11 +163,13 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getProducts(): Promise<Array<Product>>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
+    getUsageStats(): Promise<UsageStats>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
+    trackAppOpen(): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateProduct(product: Product): Promise<void>;
 }
@@ -308,6 +316,20 @@ export class Backend implements backendInterface {
             return from_candid_StripeSessionStatus_n9(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getUsageStats(): Promise<UsageStats> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUsageStats();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUsageStats();
+            return result;
+        }
+    }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -375,6 +397,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.setStripeConfiguration(arg0);
+            return result;
+        }
+    }
+    async trackAppOpen(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.trackAppOpen();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.trackAppOpen();
             return result;
         }
     }

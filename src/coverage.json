@@ -1,86 +1,69 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T22:37:48.494Z",
+  "generatedAt": "2026-02-19T21:01:46.867Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
+    "total": 3,
     "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Remove any Stripe-configuration gating that prevents the main application UI (Header + MainAnalyzer + Footer) from rendering at the shared/public URL; the core analyzer experience must load even when Stripe is not configured or Stripe status checks fail.",
+        "summary": "Add custom domain configuration interface in the Admin Dashboard that allows administrators to view instructions for setting up a custom domain (DNS CNAME records pointing to the Internet Computer canister URL) and displays the current domain status",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/ProAccessUpgrade.tsx"
+          "frontend/src/components/CustomDomainPanel.tsx",
+          "frontend/src/components/SettingsPanel.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/ProAccessUpgrade.tsx"
+          "frontend/src/components/CustomDomainPanel.tsx",
+          "frontend/src/components/SettingsPanel.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update the Pro Access/upgrade UI so that when Stripe is not configured, it does not replace the entire upgrade page with a required setup guide; instead, render the normal plans UI and disable paid upgrade actions with clear inline messaging (e.g., “Payments are currently unavailable”).",
+        "summary": "Add Open Graph and Twitter Card meta tags to the application HTML head to enable rich social media previews when sharing the app link, including title, description, and preview image",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/ProAccessUpgrade.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/index.html",
+          "frontend/public/assets/generated/social-preview.dim_1200x630.png"
         ],
         "matchedFiles": [
-          "frontend/src/components/ProAccessUpgrade.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/index.html",
+          "frontend/public/assets/generated/social-preview.dim_1200x630.png"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Hide admin setup actions from non-admin users: do not show any “Go to Admin Dashboard” navigation/button (or equivalent admin-entry affordance) unless the current caller is confirmed to be an admin.",
+        "summary": "Display the shareable app URL prominently in the application interface with a copy-to-clipboard button to make sharing easier for users",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/SettingsPanel.tsx",
-          "frontend/src/components/ProAccessUpgrade.tsx"
+          "frontend/src/components/ShareableUrlBanner.tsx",
+          "frontend/src/components/Footer.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/SettingsPanel.tsx",
-          "frontend/src/components/ProAccessUpgrade.tsx"
+          "frontend/src/components/ShareableUrlBanner.tsx",
+          "frontend/src/components/Footer.tsx"
         ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Ensure backend Stripe configuration status endpoints used by the public UI are safe for anonymous callers and never trap/throw; they must return a boolean status even when no identity is present.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
-    "build-template/Dockerfile",
-    "build-template/LICENSE",
-    "build-template/README.md",
-    "build-template/deploy.sh",
-    "build-template/icp.yaml",
-    "build-template/src/backend/canister.yaml",
-    "build-template/src/frontend/canister.yaml",
     "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AdminDashboard.tsx",
-    "frontend/src/components/ProAccessUpgrade.tsx",
+    "frontend/index.html",
+    "frontend/public/assets/generated/social-preview.dim_1200x630.png",
+    "frontend/src/components/CustomDomainPanel.tsx",
+    "frontend/src/components/Footer.tsx",
     "frontend/src/components/SettingsPanel.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/components/ShareableUrlBanner.tsx",
+    "frontend/src/config.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
