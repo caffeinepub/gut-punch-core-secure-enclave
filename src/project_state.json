@@ -1,31 +1,36 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Building a shareable app with custom domain and social media preview features",
-  "architectural_notes": [],
+  "summary": "Gut-Punch: A dark-themed secure enclave analytics app with custom domain setup, social media preview cards, Pro subscription tiers, and landing page emphasizing the 'Handshake Protocol' narrative. User wants to publish to Caffeine App Market with paid clones and configure OISY wallet for royalty payments.",
+  "architectural_notes": [
+    "Custom domain configuration available in Admin Dashboard (Pro tier required)",
+    "Social media preview cards configured with title, description, and branding",
+    "Pro subscription required for backdoor/admin access (Stripe/Gemini key config)",
+    "Share functionality copies app URL to clipboard for universal sharing",
+    "Landing page narrative focused on 'The Handshake Protocol' with tiered sovereignty model"
+  ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Social media preview card showing the Gut Punch logo with a secure shield icon and tagline 'AI-Powered Scam Detection' on a clean gradient background (social-preview.dim_1200x630.png)",
   "existing_features": [
     {
-      "id": "feature-add-custom-domain-configuration-interface-in-the-admin-dashboard-that-allows-administrators-to-view-instructions-for-setting-up-a-custom-domain-dns-cname-records-pointing-to-the-internet-computer-canister-url-and-displays-the-current-domain-status",
-      "title": "Add custom domain configuration interface in the Admin Dashboard that allows administrators to view instructions for setting up a custom domain (DNS CNAME records pointing to the Internet Computer canister URL) and displays the current domain status",
+      "id": "feature-add-a-publish-to-market-section-in-the-admin-dashboard-that-allows-the-admin-to-configure-app-market-listing-settings-including-price-in-usd-app-description-for-the-marketplace-and-category-selection",
+      "title": "Add a 'Publish to Market' section in the Admin Dashboard that allows the admin to configure app market listing settings including price (in USD), app description for the marketplace, and category selection",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-open-graph-and-twitter-card-meta-tags-to-the-application-html-head-to-enable-rich-social-media-previews-when-sharing-the-app-link-including-title-description-and-preview-image",
-      "title": "Add Open Graph and Twitter Card meta tags to the application HTML head to enable rich social media previews when sharing the app link, including title, description, and preview image",
+      "id": "feature-create-an-oisy-wallet-configuration-panel-in-the-admin-dashboard-where-the-admin-can-input-their-oisy-wallet-principal-id-and-select-their-preferred-payout-currency-usdc-bitcoin-or-icp",
+      "title": "Create an OISY wallet configuration panel in the Admin Dashboard where the admin can input their OISY wallet principal ID and select their preferred payout currency (USDC, Bitcoin, or ICP)",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-the-shareable-app-url-prominently-in-the-application-interface-with-a-copy-to-clipboard-button-to-make-sharing-easier-for-users",
-      "title": "Display the shareable app URL prominently in the application interface with a copy-to-clipboard button to make sharing easier for users",
+      "id": "feature-display-the-current-app-market-publishing-status-in-the-admin-dashboard-showing-whether-the-app-is-published-the-current-price-connected-wallet-status-and-total-royalties-earned",
+      "title": "Display the current app market publishing status in the Admin Dashboard showing whether the app is published, the current price, connected wallet status, and total royalties earned",
       "reqIds": [
         "REQ-3"
       ],
@@ -35,18 +40,26 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Custom domain setup",
+      "summary": "Publish app to Caffeine App Market with paid clone pricing",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Social media preview cards",
+      "summary": "Configure OISY wallet for royalty payments (USDC/Bitcoin/ICP)",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add a backend endpoint to store and retrieve app market configuration including price, description, category, wallet principal, and payout currency preference",
+      "reqIds": [
+        "REQ-4"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Gut Punch",
+  "projectName": "Gut-Punch",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

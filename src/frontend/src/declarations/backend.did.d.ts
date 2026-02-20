@@ -10,6 +10,26 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type MarketCategory = { 'utility' : null } |
+  { 'finance' : null } |
+  { 'other' : null } |
+  { 'entertainment' : null } |
+  { 'productivity' : null } |
+  { 'education' : null } |
+  { 'business' : null } |
+  { 'health' : null };
+export interface MarketConfig {
+  'isPublished' : boolean,
+  'description' : string,
+  'payoutCurrency' : PayoutCurrency,
+  'totalRoyaltiesEarned' : bigint,
+  'category' : MarketCategory,
+  'priceUSD' : bigint,
+  'walletPrincipal' : [] | [Principal],
+}
+export type PayoutCurrency = { 'btc' : null } |
+  { 'icp' : null } |
+  { 'usdc' : null };
 export interface Product {
   'id' : string,
   'name' : string,
@@ -72,16 +92,19 @@ export interface _SERVICE {
   'deleteProduct' : ActorMethod<[string], undefined>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getMarketConfig' : ActorMethod<[], MarketConfig>,
   'getProducts' : ActorMethod<[], Array<Product>>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getUsageStats' : ActorMethod<[], UsageStats>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
+  'publish' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'trackAppOpen' : ActorMethod<[], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
+  'updateMarketConfig' : ActorMethod<[MarketConfig], undefined>,
   'updateProduct' : ActorMethod<[Product], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

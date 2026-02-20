@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { UserProfile, Product, ShoppingItem, StripeConfiguration, UsageStats } from '../backend';
+import type { UserProfile, Product, ShoppingItem, StripeConfiguration, UsageStats, MarketConfig } from '../backend';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -180,5 +180,51 @@ export function useGetUsageStats() {
         },
         enabled: !!actor && !actorFetching && isAdmin === true,
         retry: false,
+    });
+}
+
+// App Market Configuration Queries
+export function useGetMarketConfig() {
+    const { actor, isFetching: actorFetching } = useActor();
+    const { data: isAdmin } = useIsCallerAdmin();
+
+    return useQuery<MarketConfig>({
+        queryKey: ['marketConfig'],
+        queryFn: async () => {
+            if (!actor) throw new Error('Actor not available');
+            return actor.getMarketConfig();
+        },
+        enabled: !!actor && !actorFetching && isAdmin === true,
+        retry: false,
+    });
+}
+
+export function useUpdateMarketConfig() {
+    const { actor } = useActor();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (config: MarketConfig) => {
+            if (!actor) throw new Error('Actor not available');
+            return actor.updateMarketConfig(config);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['marketConfig'] });
+        },
+    });
+}
+
+export function usePublish() {
+    const { actor } = useActor();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async () => {
+            if (!actor) throw new Error('Actor not available');
+            return actor.publish();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['marketConfig'] });
+        },
     });
 }

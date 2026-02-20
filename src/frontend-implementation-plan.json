@@ -1,70 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add custom domain support and social media preview cards",
+  "title": "Configure App Market Publishing and OISY Wallet Integration",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add custom domain configuration interface in Admin Dashboard showing DNS setup instructions and canister URL",
+      "summary": "Add 'Publish to Market' section in Admin Dashboard for configuring marketplace listing settings including price, description, and category",
       "acceptanceCriteria": [
-        "Admin Dashboard contains a new 'Custom Domain' section",
-        "Section displays step-by-step DNS configuration instructions",
-        "Shows the current canister URL for CNAME configuration",
-        "Includes verification status for custom domain setup"
+        "Admin Dashboard displays a new 'App Market Publishing' tab or section",
+        "Form allows setting a price in USD for paid clones (minimum $0 for free)",
+        "Form includes a textarea for marketplace description (separate from app description)",
+        "Form includes category selection dropdown",
+        "Settings are saved to backend and persisted",
+        "Only admin users can access this configuration"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/CustomDomainPanel.tsx",
-          "operation": "create",
-          "description": "Create a new CustomDomainPanel component that displays DNS configuration instructions for setting up a custom domain. Show the current Internet Computer canister URL (derived from window.location.host or environment) that administrators need to point their CNAME records to. Include step-by-step instructions for DNS setup (e.g., add CNAME record, configure www subdomain, wait for propagation). Display a verification status indicator showing whether a custom domain is currently active (check if current hostname differs from default canister URL). Use shadcn/ui Card, Alert, and CopyButton components for the UI. Include a note that DNS changes happen externally and may take time to propagate."
+          "path": "frontend/src/components/AdminDashboard.tsx",
+          "operation": "modify",
+          "description": "Add a new 'Market Publishing' tab to the existing AdminDashboard component. Create a form section that includes: a number input for price in USD (min 0), a textarea for marketplace description, and a select dropdown for category (using MarketCategory enum values from backend.d.ts). Wire the form to call the backend updateMarketConfig method using the useActor hook. Display current market configuration by fetching data from getMarketConfig. Apply admin-only access control following existing patterns in the component. Verify the authorization component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/SettingsPanel.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add a new 'Custom Domain' tab to the existing SettingsPanel tabs array. Import and render the CustomDomainPanel component in the tab content area when the custom domain tab is selected. Ensure the tab is only visible to authenticated admin users by checking the admin status from useGetCallerUserRole or isCallerAdmin. Position the tab logically within the existing tab order (e.g., after Admin tab or in the Admin section)."
+          "description": "Add two new React Query hooks: useGetMarketConfig to fetch current market configuration using actor.getMarketConfig(), and useUpdateMarketConfig as a mutation hook to update market settings using actor.updateMarketConfig(config). Both hooks should check for actor availability and follow existing patterns in the file. The mutation should invalidate the market config query on success."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add Open Graph and Twitter Card meta tags to HTML head for rich social media previews",
+      "summary": "Create OISY wallet configuration panel in Admin Dashboard for wallet principal ID and payout currency selection",
       "acceptanceCriteria": [
-        "HTML head includes og:title, og:description, og:image, and og:url meta tags",
-        "HTML head includes twitter:card, twitter:title, twitter:description, and twitter:image meta tags",
-        "Meta tags reflect the Gut Punch app identity and security scanning purpose",
-        "Preview image is appropriate for social media sharing (1200x630px recommended)"
+        "New 'Wallet Configuration' section appears in Admin Dashboard",
+        "Input field for OISY wallet principal ID with validation",
+        "Radio buttons or dropdown for selecting payout currency (USDC, Bitcoin, ICP)",
+        "Display current wallet configuration status",
+        "Backend stores wallet principal and currency preference",
+        "Only admin users can configure wallet settings"
       ],
       "file_operations": [
         {
-          "path": "frontend/index.html",
+          "path": "frontend/src/components/AdminDashboard.tsx",
           "operation": "modify",
-          "description": "Add Open Graph meta tags in the <head> section: og:title='Gut Punch - AI-Powered Scam Detection', og:description='Protect yourself from online scams with AI-powered text analysis and real-time threat detection', og:image pointing to the generated social preview image at '/assets/generated/social-preview.dim_1200x630.png', og:url with the canonical app URL, and og:type='website'. Add Twitter Card meta tags: twitter:card='summary_large_image', twitter:title='Gut Punch - AI-Powered Scam Detection', twitter:description='Protect yourself from online scams with AI-powered text analysis and real-time threat detection', and twitter:image pointing to '/assets/generated/social-preview.dim_1200x630.png'. Ensure all tags are properly formatted and placed before the closing </head> tag."
+          "description": "Add a 'Wallet Configuration' section within the AdminDashboard component. Include a text input for OISY wallet principal ID with Internet Computer principal format validation (basic format check for principal string). Add radio buttons or a select dropdown for payout currency options (USDC, Bitcoin, ICP) using the PayoutCurrency enum from backend.d.ts. Display current wallet status by fetching walletPrincipal and payoutCurrency from the MarketConfig. Wire inputs to update the market configuration via the useUpdateMarketConfig hook. Show connection status based on whether walletPrincipal is set. Apply admin-only access control. Verify the authorization component's usage instructions before implementing."
         },
         {
-          "path": "frontend/public/assets/generated/social-preview.dim_1200x630.png",
+          "path": "frontend/src/lib/validation.ts",
           "operation": "create",
-          "description": "Wire the generated social media preview image (social-preview.dim_1200x630.png) as a static asset in the frontend/public/assets/generated directory. This image will be referenced by the Open Graph and Twitter Card meta tags for social sharing. The image shows the Gut Punch logo with a secure shield icon and the tagline 'AI-Powered Scam Detection' on a clean gradient background, sized at 1200x630px for optimal social media display."
+          "description": "Create a validation utility file with a function validatePrincipalId that performs basic format validation for Internet Computer principal IDs (checking for alphanumeric characters, hyphens, and proper length). Export this function for use in the wallet configuration form."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Display shareable app URL with copy-to-clipboard functionality in a visible location",
+      "summary": "Display current app market publishing status in Admin Dashboard showing publish state, price, wallet status, and royalties earned",
       "acceptanceCriteria": [
-        "App URL is displayed in a visible location (Header, Footer, or Settings)",
-        "Copy button triggers clipboard write and shows confirmation feedback",
-        "URL adapts if custom domain is configured"
+        "Dashboard shows publishing status (Published/Unpublished)",
+        "If published, display the current clone price",
+        "Show wallet connection status (Connected/Not Connected)",
+        "Display wallet principal if connected",
+        "Show selected payout currency",
+        "Display total royalties earned (can be placeholder initially)",
+        "Provide a 'Publish Now' or 'Update Listing' button"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/ShareableUrlBanner.tsx",
+          "path": "frontend/src/components/MarketPublishingStatus.tsx",
           "operation": "create",
-          "description": "Create a ShareableUrlBanner component that displays the current app URL (window.location.origin) prominently with a copy-to-clipboard button. Use shadcn/ui Button with a copy icon. Implement clipboard.writeText() to copy the URL and show a toast or inline confirmation message (e.g., 'Copied!' state change) for 2-3 seconds after copying. The URL should dynamically reflect the current hostname, so it automatically adapts if a custom domain is configured. Style the banner as a compact, non-intrusive element suitable for placement in the Footer or Settings panel."
+          "description": "Create a new component that displays the current market publishing status. Use the useGetMarketConfig hook to fetch market configuration data. Display isPublished status with visual indicator (Published/Unpublished badge). Show priceUSD when published. Display wallet connection status based on walletPrincipal presence (Connected/Not Connected). Show walletPrincipal value if connected. Display payoutCurrency selection. Show totalRoyaltiesEarned from MarketConfig (format as currency). Include a button that triggers the backend publish() method when clicked. Use shadcn/ui components (Card, Badge, Button) for consistent styling. Handle loading and error states. Verify the build-template-react component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/Footer.tsx",
+          "path": "frontend/src/components/AdminDashboard.tsx",
           "operation": "modify",
-          "description": "Import and render the ShareableUrlBanner component in the Footer component. Position it prominently but harmoniously with the existing branding and privacy note. Ensure the banner is visible on all pages where the Footer appears. Style it to fit the existing Footer design with appropriate spacing and alignment."
+          "description": "Import and render the MarketPublishingStatus component at the top of the Market Publishing tab section to display current status before the configuration forms. Ensure proper layout and spacing with existing dashboard content."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a usePublish mutation hook that calls actor.publish() to publish the app to the market. Include proper error handling and invalidate the market config query on success to refresh the publishing status display."
         }
       ]
     }

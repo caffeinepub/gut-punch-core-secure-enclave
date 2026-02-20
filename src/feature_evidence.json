@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-custom-domain-configuration-interface-in-the-admin-dashboard-that-allows-administrators-to-view-instructions-for-setting-up-a-custom-domain-dns-cname-records-pointing-to-the-internet-computer-canister-url-and-displays-the-current-domain-status",
-      "featureTitle": "Add custom domain configuration interface in the Admin Dashboard that allows administrators to view instructions for setting up a custom domain (DNS CNAME records pointing to the Internet Computer canister URL) and displays the current domain status",
+      "featureId": "feature-add-a-publish-to-market-section-in-the-admin-dashboard-that-allows-the-admin-to-configure-app-market-listing-settings-including-price-in-usd-app-description-for-the-marketplace-and-category-selection",
+      "featureTitle": "Add a 'Publish to Market' section in the Admin Dashboard that allows the admin to configure app market listing settings including price (in USD), app description for the marketplace, and category selection",
       "files": [
-        "frontend/src/components/CustomDomainPanel.tsx",
-        "frontend/src/components/SettingsPanel.tsx"
+        "frontend/src/components/AdminDashboard.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -24,10 +24,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-open-graph-and-twitter-card-meta-tags-to-the-application-html-head-to-enable-rich-social-media-previews-when-sharing-the-app-link-including-title-description-and-preview-image",
-      "featureTitle": "Add Open Graph and Twitter Card meta tags to the application HTML head to enable rich social media previews when sharing the app link, including title, description, and preview image",
+      "featureId": "feature-create-an-oisy-wallet-configuration-panel-in-the-admin-dashboard-where-the-admin-can-input-their-oisy-wallet-principal-id-and-select-their-preferred-payout-currency-usdc-bitcoin-or-icp",
+      "featureTitle": "Create an OISY wallet configuration panel in the Admin Dashboard where the admin can input their OISY wallet principal ID and select their preferred payout currency (USDC, Bitcoin, or ICP)",
       "files": [
-        "frontend/index.html"
+        "frontend/src/components/AdminDashboard.tsx",
+        "frontend/src/lib/validation.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -45,11 +46,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-the-shareable-app-url-prominently-in-the-application-interface-with-a-copy-to-clipboard-button-to-make-sharing-easier-for-users",
-      "featureTitle": "Display the shareable app URL prominently in the application interface with a copy-to-clipboard button to make sharing easier for users",
+      "featureId": "feature-display-the-current-app-market-publishing-status-in-the-admin-dashboard-showing-whether-the-app-is-published-the-current-price-connected-wallet-status-and-total-royalties-earned",
+      "featureTitle": "Display the current app market publishing status in the Admin Dashboard showing whether the app is published, the current price, connected wallet status, and total royalties earned",
       "files": [
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/components/ShareableUrlBanner.tsx"
+        "frontend/src/components/AdminDashboard.tsx",
+        "frontend/src/components/MarketPublishingStatus.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",

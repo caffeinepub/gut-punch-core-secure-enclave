@@ -89,23 +89,35 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface http_request_result {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
-}
-export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    priceId: string;
-}
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
     headers: Array<http_header>;
 }
 export type Time = bigint;
+export interface MarketConfig {
+    isPublished: boolean;
+    description: string;
+    payoutCurrency: PayoutCurrency;
+    totalRoyaltiesEarned: bigint;
+    category: MarketCategory;
+    priceUSD: bigint;
+    walletPrincipal?: Principal;
+}
+export interface UsageStats {
+    uniqueUserEstimate: bigint;
+    recentAppOpenEvents: Array<Time>;
+    totalAppOpenCount: bigint;
+}
+export interface http_header {
+    value: string;
+    name: string;
+}
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
 export interface ShoppingItem {
     productName: string;
     currency: string;
@@ -133,19 +145,31 @@ export interface StripeConfiguration {
     allowedCountries: Array<string>;
     secretKey: string;
 }
-export interface UsageStats {
-    uniqueUserEstimate: bigint;
-    recentAppOpenEvents: Array<Time>;
-    totalAppOpenCount: bigint;
+export interface Product {
+    id: string;
+    name: string;
+    description: string;
+    priceId: string;
 }
 export interface UserProfile {
     name: string;
     email?: string;
     stripeCustomerId?: string;
 }
-export interface http_header {
-    value: string;
-    name: string;
+export enum MarketCategory {
+    utility = "utility",
+    finance = "finance",
+    other = "other",
+    entertainment = "entertainment",
+    productivity = "productivity",
+    education = "education",
+    business = "business",
+    health = "health"
+}
+export enum PayoutCurrency {
+    btc = "btc",
+    icp = "icp",
+    usdc = "usdc"
 }
 export enum UserRole {
     admin = "admin",
@@ -161,19 +185,22 @@ export interface backendInterface {
     deleteProduct(productId: string): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getMarketConfig(): Promise<MarketConfig>;
     getProducts(): Promise<Array<Product>>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUsageStats(): Promise<UsageStats>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
+    publish(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     trackAppOpen(): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
+    updateMarketConfig(config: MarketConfig): Promise<void>;
     updateProduct(product: Product): Promise<void>;
 }
-import type { StripeSessionStatus as _StripeSessionStatus, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { MarketCategory as _MarketCategory, MarketConfig as _MarketConfig, PayoutCurrency as _PayoutCurrency, StripeSessionStatus as _StripeSessionStatus, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -288,6 +315,20 @@ export class Backend implements backendInterface {
             return from_candid_UserRole_n7(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getMarketConfig(): Promise<MarketConfig> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getMarketConfig();
+                return from_candid_MarketConfig_n9(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getMarketConfig();
+            return from_candid_MarketConfig_n9(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getProducts(): Promise<Array<Product>> {
         if (this.processError) {
             try {
@@ -306,14 +347,14 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getStripeSessionStatus(arg0);
-                return from_candid_StripeSessionStatus_n9(this._uploadFile, this._downloadFile, result);
+                return from_candid_StripeSessionStatus_n16(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getStripeSessionStatus(arg0);
-            return from_candid_StripeSessionStatus_n9(this._uploadFile, this._downloadFile, result);
+            return from_candid_StripeSessionStatus_n16(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUsageStats(): Promise<UsageStats> {
@@ -372,17 +413,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
+    async publish(): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n12(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.publish();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n12(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.publish();
+            return result;
+        }
+    }
+    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n19(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n19(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }
@@ -428,6 +483,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async updateMarketConfig(arg0: MarketConfig): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateMarketConfig(to_candid_MarketConfig_n21(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateMarketConfig(to_candid_MarketConfig_n21(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
     async updateProduct(arg0: Product): Promise<void> {
         if (this.processError) {
             try {
@@ -443,8 +512,17 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_StripeSessionStatus_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _StripeSessionStatus): StripeSessionStatus {
-    return from_candid_variant_n10(_uploadFile, _downloadFile, value);
+function from_candid_MarketCategory_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _MarketCategory): MarketCategory {
+    return from_candid_variant_n14(_uploadFile, _downloadFile, value);
+}
+function from_candid_MarketConfig_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _MarketConfig): MarketConfig {
+    return from_candid_record_n10(_uploadFile, _downloadFile, value);
+}
+function from_candid_PayoutCurrency_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _PayoutCurrency): PayoutCurrency {
+    return from_candid_variant_n12(_uploadFile, _downloadFile, value);
+}
+function from_candid_StripeSessionStatus_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _StripeSessionStatus): StripeSessionStatus {
+    return from_candid_variant_n17(_uploadFile, _downloadFile, value);
 }
 function from_candid_UserProfile_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserProfile): UserProfile {
     return from_candid_record_n5(_uploadFile, _downloadFile, value);
@@ -452,13 +530,43 @@ function from_candid_UserProfile_n4(_uploadFile: (file: ExternalBlob) => Promise
 function from_candid_UserRole_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n8(_uploadFile, _downloadFile, value);
 }
+function from_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [Principal]): Principal | null {
+    return value.length === 0 ? null : value[0];
+}
 function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
     return value.length === 0 ? null : from_candid_UserProfile_n4(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_record_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    isPublished: boolean;
+    description: string;
+    payoutCurrency: _PayoutCurrency;
+    totalRoyaltiesEarned: bigint;
+    category: _MarketCategory;
+    priceUSD: bigint;
+    walletPrincipal: [] | [Principal];
+}): {
+    isPublished: boolean;
+    description: string;
+    payoutCurrency: PayoutCurrency;
+    totalRoyaltiesEarned: bigint;
+    category: MarketCategory;
+    priceUSD: bigint;
+    walletPrincipal?: Principal;
+} {
+    return {
+        isPublished: value.isPublished,
+        description: value.description,
+        payoutCurrency: from_candid_PayoutCurrency_n11(_uploadFile, _downloadFile, value.payoutCurrency),
+        totalRoyaltiesEarned: value.totalRoyaltiesEarned,
+        category: from_candid_MarketCategory_n13(_uploadFile, _downloadFile, value.category),
+        priceUSD: value.priceUSD,
+        walletPrincipal: record_opt_to_undefined(from_candid_opt_n15(_uploadFile, _downloadFile, value.walletPrincipal))
+    };
+}
+function from_candid_record_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     userPrincipal: [] | [string];
     response: string;
 }): {
@@ -485,7 +593,35 @@ function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint
         stripeCustomerId: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.stripeCustomerId))
     };
 }
-function from_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    btc: null;
+} | {
+    icp: null;
+} | {
+    usdc: null;
+}): PayoutCurrency {
+    return "btc" in value ? PayoutCurrency.btc : "icp" in value ? PayoutCurrency.icp : "usdc" in value ? PayoutCurrency.usdc : value;
+}
+function from_candid_variant_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    utility: null;
+} | {
+    finance: null;
+} | {
+    other: null;
+} | {
+    entertainment: null;
+} | {
+    productivity: null;
+} | {
+    education: null;
+} | {
+    business: null;
+} | {
+    health: null;
+}): MarketCategory {
+    return "utility" in value ? MarketCategory.utility : "finance" in value ? MarketCategory.finance : "other" in value ? MarketCategory.other : "entertainment" in value ? MarketCategory.entertainment : "productivity" in value ? MarketCategory.productivity : "education" in value ? MarketCategory.education : "business" in value ? MarketCategory.business : "health" in value ? MarketCategory.health : value;
+}
+function from_candid_variant_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     completed: {
         userPrincipal: [] | [string];
         response: string;
@@ -508,7 +644,7 @@ function from_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Ui
 } {
     return "completed" in value ? {
         __kind__: "completed",
-        completed: from_candid_record_n11(_uploadFile, _downloadFile, value.completed)
+        completed: from_candid_record_n18(_uploadFile, _downloadFile, value.completed)
     } : "failed" in value ? {
         __kind__: "failed",
         failed: value.failed
@@ -523,13 +659,22 @@ function from_candid_variant_n8(_uploadFile: (file: ExternalBlob) => Promise<Uin
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
-function to_candid_UserProfile_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserProfile): _UserProfile {
-    return to_candid_record_n13(_uploadFile, _downloadFile, value);
+function to_candid_MarketCategory_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: MarketCategory): _MarketCategory {
+    return to_candid_variant_n26(_uploadFile, _downloadFile, value);
+}
+function to_candid_MarketConfig_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: MarketConfig): _MarketConfig {
+    return to_candid_record_n22(_uploadFile, _downloadFile, value);
+}
+function to_candid_PayoutCurrency_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PayoutCurrency): _PayoutCurrency {
+    return to_candid_variant_n24(_uploadFile, _downloadFile, value);
+}
+function to_candid_UserProfile_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserProfile): _UserProfile {
+    return to_candid_record_n20(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);
 }
-function to_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_record_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     name: string;
     email?: string;
     stripeCustomerId?: string;
@@ -542,6 +687,33 @@ function to_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8
         name: value.name,
         email: value.email ? candid_some(value.email) : candid_none(),
         stripeCustomerId: value.stripeCustomerId ? candid_some(value.stripeCustomerId) : candid_none()
+    };
+}
+function to_candid_record_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    isPublished: boolean;
+    description: string;
+    payoutCurrency: PayoutCurrency;
+    totalRoyaltiesEarned: bigint;
+    category: MarketCategory;
+    priceUSD: bigint;
+    walletPrincipal?: Principal;
+}): {
+    isPublished: boolean;
+    description: string;
+    payoutCurrency: _PayoutCurrency;
+    totalRoyaltiesEarned: bigint;
+    category: _MarketCategory;
+    priceUSD: bigint;
+    walletPrincipal: [] | [Principal];
+} {
+    return {
+        isPublished: value.isPublished,
+        description: value.description,
+        payoutCurrency: to_candid_PayoutCurrency_n23(_uploadFile, _downloadFile, value.payoutCurrency),
+        totalRoyaltiesEarned: value.totalRoyaltiesEarned,
+        category: to_candid_MarketCategory_n25(_uploadFile, _downloadFile, value.category),
+        priceUSD: value.priceUSD,
+        walletPrincipal: value.walletPrincipal ? candid_some(value.walletPrincipal) : candid_none()
     };
 }
 function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {
@@ -557,6 +729,56 @@ function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8
         user: null
     } : value == UserRole.guest ? {
         guest: null
+    } : value;
+}
+function to_candid_variant_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PayoutCurrency): {
+    btc: null;
+} | {
+    icp: null;
+} | {
+    usdc: null;
+} {
+    return value == PayoutCurrency.btc ? {
+        btc: null
+    } : value == PayoutCurrency.icp ? {
+        icp: null
+    } : value == PayoutCurrency.usdc ? {
+        usdc: null
+    } : value;
+}
+function to_candid_variant_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: MarketCategory): {
+    utility: null;
+} | {
+    finance: null;
+} | {
+    other: null;
+} | {
+    entertainment: null;
+} | {
+    productivity: null;
+} | {
+    education: null;
+} | {
+    business: null;
+} | {
+    health: null;
+} {
+    return value == MarketCategory.utility ? {
+        utility: null
+    } : value == MarketCategory.finance ? {
+        finance: null
+    } : value == MarketCategory.other ? {
+        other: null
+    } : value == MarketCategory.entertainment ? {
+        entertainment: null
+    } : value == MarketCategory.productivity ? {
+        productivity: null
+    } : value == MarketCategory.education ? {
+        education: null
+    } : value == MarketCategory.business ? {
+        business: null
+    } : value == MarketCategory.health ? {
+        health: null
     } : value;
 }
 export interface CreateActorOptions {

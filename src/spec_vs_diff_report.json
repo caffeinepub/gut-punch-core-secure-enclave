@@ -1,26 +1,18 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-19T21:01:46.864Z",
-  "summary": "The diff implements all three requirements (REQ-1, REQ-2, REQ-3) with comprehensive coverage. REQ-1 is fulfilled through CustomDomainPanel.tsx with DNS instructions, canister URL display, and status verification. REQ-2 is addressed via Open Graph and Twitter Card meta tags in frontend/index.html. REQ-3 is implemented through ShareableUrlBanner.tsx integrated into Footer.tsx with copy-to-clipboard functionality. All acceptance criteria appear to be met based on the available evidence.",
+  "generatedAt": "2026-02-20T09:12:13.226Z",
+  "summary": "The diff successfully implements all four requirements for App Market Publishing and OISY Wallet Integration. REQ-1 (market listing configuration), REQ-2 (wallet configuration panel), REQ-3 (publishing status display), and REQ-4 (backend endpoints) are fully implemented with complete acceptance criteria coverage. The implementation follows the existing AdminDashboard pattern with a new tabbed interface, includes proper validation for wallet principals, and enforces admin-only access control. No missing requirements or hallucinated features detected.",
   "missing_requirements": [],
-  "hallucinated_features": [
-    {
-      "description": "Four-tab layout in SettingsPanel including 'General', 'Pro Access', 'Custom Domain', and 'Admin' tabs",
-      "reason": "The BuildRequest only mentions adding a Custom Domain section to the Admin Dashboard. The diff shows CustomDomainPanel is added as a separate tab in SettingsPanel, but the requirement specified it should be in the Admin Dashboard specifically. The implementation appears to place it in a dedicated tab rather than within the AdminDashboard component.",
-      "evidence": [
-        "frontend/src/components/SettingsPanel.tsx"
-      ]
-    }
-  ],
-  "confidence": 0.85,
+  "hallucinated_features": [],
+  "confidence": 0.95,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.html",
-    "frontend/src/components/CustomDomainPanel.tsx",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/SettingsPanel.tsx",
-    "frontend/src/components/ShareableUrlBanner.tsx",
+    "frontend/src/components/AdminDashboard.tsx",
+    "frontend/src/components/MarketPublishingStatus.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/lib/validation.ts",
     "project_state.json"
   ]
 }

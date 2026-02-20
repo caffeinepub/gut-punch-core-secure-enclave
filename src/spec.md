@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add custom domain support instructions and social media preview functionality to improve shareability and branding.
+**Goal:** Add app market publishing configuration and OISY wallet integration to the Admin Dashboard.
 
 **Planned changes:**
-- Add Custom Domain section in Admin Dashboard with DNS configuration instructions and status display
-- Add Open Graph and Twitter Card meta tags for rich social media previews
-- Display shareable app URL with copy-to-clipboard button in the application interface
+- Add "App Market Publishing" section in Admin Dashboard with price, marketplace description, and category configuration
+- Create "Wallet Configuration" panel for OISY wallet principal ID and payout currency selection (USDC, Bitcoin, ICP)
+- Display publishing status dashboard showing publish state, price, wallet connection status, and total royalties earned
+- Add backend endpoints to store and retrieve market configuration and wallet settings
 
-**User-visible outcome:** Administrators can view instructions for setting up a custom domain, and users can easily share the app with rich social media preview cards showing the Gut Punch branding and tagline.
+**User-visible outcome:** Admin users can configure their app for marketplace listing by setting price, description, and category, connect their OISY wallet with preferred payout currency, and view their publishing status and royalties in the dashboard.

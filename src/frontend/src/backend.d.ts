@@ -7,23 +7,35 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface http_request_result {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
-}
-export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    priceId: string;
-}
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
     headers: Array<http_header>;
 }
 export type Time = bigint;
+export interface MarketConfig {
+    isPublished: boolean;
+    description: string;
+    payoutCurrency: PayoutCurrency;
+    totalRoyaltiesEarned: bigint;
+    category: MarketCategory;
+    priceUSD: bigint;
+    walletPrincipal?: Principal;
+}
+export interface UsageStats {
+    uniqueUserEstimate: bigint;
+    recentAppOpenEvents: Array<Time>;
+    totalAppOpenCount: bigint;
+}
+export interface http_header {
+    value: string;
+    name: string;
+}
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
 export interface ShoppingItem {
     productName: string;
     currency: string;
@@ -51,19 +63,31 @@ export interface StripeConfiguration {
     allowedCountries: Array<string>;
     secretKey: string;
 }
-export interface UsageStats {
-    uniqueUserEstimate: bigint;
-    recentAppOpenEvents: Array<Time>;
-    totalAppOpenCount: bigint;
+export interface Product {
+    id: string;
+    name: string;
+    description: string;
+    priceId: string;
 }
 export interface UserProfile {
     name: string;
     email?: string;
     stripeCustomerId?: string;
 }
-export interface http_header {
-    value: string;
-    name: string;
+export enum MarketCategory {
+    utility = "utility",
+    finance = "finance",
+    other = "other",
+    entertainment = "entertainment",
+    productivity = "productivity",
+    education = "education",
+    business = "business",
+    health = "health"
+}
+export enum PayoutCurrency {
+    btc = "btc",
+    icp = "icp",
+    usdc = "usdc"
 }
 export enum UserRole {
     admin = "admin",
@@ -78,15 +102,18 @@ export interface backendInterface {
     deleteProduct(productId: string): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getMarketConfig(): Promise<MarketConfig>;
     getProducts(): Promise<Array<Product>>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUsageStats(): Promise<UsageStats>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
+    publish(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     trackAppOpen(): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
+    updateMarketConfig(config: MarketConfig): Promise<void>;
     updateProduct(product: Product): Promise<void>;
 }

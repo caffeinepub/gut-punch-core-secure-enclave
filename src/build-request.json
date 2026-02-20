@@ -1,78 +1,107 @@
 {
   "kind": "build_request",
-  "title": "Add custom domain support and social media preview cards",
+  "title": "Configure App Market Publishing and OISY Wallet Integration",
   "projectName": "Gut Punch",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add custom domain configuration interface in the Admin Dashboard that allows administrators to view instructions for setting up a custom domain (DNS CNAME records pointing to the Internet Computer canister URL) and displays the current domain status",
-      "target": "frontend",
+      "text": "Add a 'Publish to Market' section in the Admin Dashboard that allows the admin to configure app market listing settings including price (in USD), app description for the marketplace, and category selection",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-final"
         ],
         "quotes": [
-          "Sure both would be nice"
+          "Yes on both"
         ]
       },
       "acceptanceCriteria": [
-        "Admin Dashboard contains a new 'Custom Domain' section",
-        "Section displays step-by-step DNS configuration instructions",
-        "Shows the current canister URL for CNAME configuration",
-        "Includes verification status for custom domain setup"
+        "Admin Dashboard displays a new 'App Market Publishing' tab or section",
+        "Form allows setting a price in USD for paid clones (minimum $0 for free)",
+        "Form includes a textarea for marketplace description (separate from app description)",
+        "Form includes category selection dropdown",
+        "Settings are saved to backend and persisted",
+        "Only admin users can access this configuration"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add Open Graph and Twitter Card meta tags to the application HTML head to enable rich social media previews when sharing the app link, including title, description, and preview image",
-      "target": "frontend",
+      "text": "Create an OISY wallet configuration panel in the Admin Dashboard where the admin can input their OISY wallet principal ID and select their preferred payout currency (USDC, Bitcoin, or ICP)",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-final"
         ],
         "quotes": [
-          "Sure both would be nice"
+          "Yes on both"
         ]
       },
       "acceptanceCriteria": [
-        "HTML head includes og:title, og:description, og:image, and og:url meta tags",
-        "HTML head includes twitter:card, twitter:title, twitter:description, and twitter:image meta tags",
-        "Meta tags reflect the Gut Punch app identity and security scanning purpose",
-        "Preview image is appropriate for social media sharing (1200x630px recommended)"
+        "New 'Wallet Configuration' section appears in Admin Dashboard",
+        "Input field for OISY wallet principal ID with validation",
+        "Radio buttons or dropdown for selecting payout currency (USDC, Bitcoin, ICP)",
+        "Display current wallet configuration status",
+        "Backend stores wallet principal and currency preference",
+        "Only admin users can configure wallet settings"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Display the shareable app URL prominently in the application interface with a copy-to-clipboard button to make sharing easier for users",
-      "target": "frontend",
+      "text": "Display the current app market publishing status in the Admin Dashboard showing whether the app is published, the current price, connected wallet status, and total royalties earned",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-final"
+        ],
+        "quotes": [
+          "Yes on both"
         ]
       },
       "acceptanceCriteria": [
-        "App URL is displayed in a visible location (Header, Footer, or Settings)",
-        "Copy button triggers clipboard write and shows confirmation feedback",
-        "URL adapts if custom domain is configured"
+        "Dashboard shows publishing status (Published/Unpublished)",
+        "If published, display the current clone price",
+        "Show wallet connection status (Connected/Not Connected)",
+        "Display wallet principal if connected",
+        "Show selected payout currency",
+        "Display total royalties earned (can be placeholder initially)",
+        "Provide a 'Publish Now' or 'Update Listing' button"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Add a backend endpoint to store and retrieve app market configuration including price, description, category, wallet principal, and payout currency preference",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-final"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend stores market configuration in stable storage",
+        "Endpoint allows admin to set/update market price",
+        "Endpoint allows admin to set/update marketplace description",
+        "Endpoint allows admin to set/update wallet principal and currency",
+        "Endpoint retrieves current market configuration",
+        "All endpoints enforce admin-only access control"
       ]
     }
   ],
   "constraints": [
-    "Do not modify authentication logic in useInternetIdentity.ts",
-    "Do not edit UI component sources in frontend/src/components/ui",
-    "Custom domain setup is informational only - actual DNS configuration happens externally"
+    "All wallet and payment configuration must be admin-only (existing access control pattern)",
+    "Use existing AdminDashboard component pattern with new tabs/sections",
+    "Follow existing SettingsPanel tab structure for navigation",
+    "OISY wallet principal validation should follow Internet Computer principal format"
   ],
   "nonGoals": [
-    "Backend custom domain validation or DNS verification logic",
-    "Automatic SSL certificate provisioning",
-    "Domain purchase or registration features",
-    "Dynamic og:image generation based on user content"
+    "Actual integration with Caffeine App Market API (configuration only)",
+    "Real-time royalty tracking from marketplace (display interface only)",
+    "Automatic wallet balance checking",
+    "Cryptocurrency exchange rate conversions",
+    "Multi-wallet support (single wallet per app)"
   ],
   "imageRequirements": {
-    "required": [
-      "Social media preview card showing the Gut Punch logo with a secure shield icon and tagline 'AI-Powered Scam Detection' on a clean gradient background (social-preview.dim_1200x630.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

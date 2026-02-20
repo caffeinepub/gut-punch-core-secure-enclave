@@ -31,6 +31,30 @@ export const UserProfile = IDL.Record({
   'email' : IDL.Opt(IDL.Text),
   'stripeCustomerId' : IDL.Opt(IDL.Text),
 });
+export const PayoutCurrency = IDL.Variant({
+  'btc' : IDL.Null,
+  'icp' : IDL.Null,
+  'usdc' : IDL.Null,
+});
+export const MarketCategory = IDL.Variant({
+  'utility' : IDL.Null,
+  'finance' : IDL.Null,
+  'other' : IDL.Null,
+  'entertainment' : IDL.Null,
+  'productivity' : IDL.Null,
+  'education' : IDL.Null,
+  'business' : IDL.Null,
+  'health' : IDL.Null,
+});
+export const MarketConfig = IDL.Record({
+  'isPublished' : IDL.Bool,
+  'description' : IDL.Text,
+  'payoutCurrency' : PayoutCurrency,
+  'totalRoyaltiesEarned' : IDL.Nat,
+  'category' : MarketCategory,
+  'priceUSD' : IDL.Nat,
+  'walletPrincipal' : IDL.Opt(IDL.Principal),
+});
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
     'userPrincipal' : IDL.Opt(IDL.Text),
@@ -80,6 +104,7 @@ export const idlService = IDL.Service({
   'deleteProduct' : IDL.Func([IDL.Text], [], []),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getMarketConfig' : IDL.Func([], [MarketConfig], ['query']),
   'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
   'getUsageStats' : IDL.Func([], [UsageStats], []),
@@ -90,6 +115,7 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
+  'publish' : IDL.Func([], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'trackAppOpen' : IDL.Func([], [], []),
@@ -98,6 +124,7 @@ export const idlService = IDL.Service({
       [TransformationOutput],
       ['query'],
     ),
+  'updateMarketConfig' : IDL.Func([MarketConfig], [], []),
   'updateProduct' : IDL.Func([Product], [], []),
 });
 
@@ -126,6 +153,30 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'email' : IDL.Opt(IDL.Text),
     'stripeCustomerId' : IDL.Opt(IDL.Text),
+  });
+  const PayoutCurrency = IDL.Variant({
+    'btc' : IDL.Null,
+    'icp' : IDL.Null,
+    'usdc' : IDL.Null,
+  });
+  const MarketCategory = IDL.Variant({
+    'utility' : IDL.Null,
+    'finance' : IDL.Null,
+    'other' : IDL.Null,
+    'entertainment' : IDL.Null,
+    'productivity' : IDL.Null,
+    'education' : IDL.Null,
+    'business' : IDL.Null,
+    'health' : IDL.Null,
+  });
+  const MarketConfig = IDL.Record({
+    'isPublished' : IDL.Bool,
+    'description' : IDL.Text,
+    'payoutCurrency' : PayoutCurrency,
+    'totalRoyaltiesEarned' : IDL.Nat,
+    'category' : MarketCategory,
+    'priceUSD' : IDL.Nat,
+    'walletPrincipal' : IDL.Opt(IDL.Principal),
   });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
@@ -173,6 +224,7 @@ export const idlFactory = ({ IDL }) => {
     'deleteProduct' : IDL.Func([IDL.Text], [], []),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getMarketConfig' : IDL.Func([], [MarketConfig], ['query']),
     'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
     'getUsageStats' : IDL.Func([], [UsageStats], []),
@@ -183,6 +235,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
+    'publish' : IDL.Func([], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'trackAppOpen' : IDL.Func([], [], []),
@@ -191,6 +244,7 @@ export const idlFactory = ({ IDL }) => {
         [TransformationOutput],
         ['query'],
       ),
+    'updateMarketConfig' : IDL.Func([MarketConfig], [], []),
     'updateProduct' : IDL.Func([Product], [], []),
   });
 };

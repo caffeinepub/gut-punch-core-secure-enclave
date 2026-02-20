@@ -13,8 +13,6 @@ import Nat "mo:core/Nat";
 import Runtime "mo:core/Runtime";
 import List "mo:core/List";
 
-
-
 actor {
   // Types
   public type UsageStats = {
@@ -23,8 +21,47 @@ actor {
     recentAppOpenEvents : [Time.Time];
   };
 
+  // App Market Integration Types
+  public type MarketCategory = {
+    #productivity;
+    #finance;
+    #education;
+    #health;
+    #entertainment;
+    #utility;
+    #business;
+    #other;
+  };
+
+  public type PayoutCurrency = {
+    #usdc;
+    #btc;
+    #icp;
+  };
+
+  public type MarketConfig = {
+    priceUSD : Nat;
+    description : Text;
+    category : MarketCategory;
+    walletPrincipal : ?Principal;
+    payoutCurrency : PayoutCurrency;
+    isPublished : Bool;
+    totalRoyaltiesEarned : Nat;
+  };
+
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  // Market config state
+  var marketConfig : MarketConfig = {
+    priceUSD = 0;
+    description = "";
+    category = #other;
+    walletPrincipal = null;
+    payoutCurrency = #usdc;
+    isPublished = false;
+    totalRoyaltiesEarned = 0;
+  };
 
   // User Profile Management
   public type UserProfile = {
@@ -195,6 +232,31 @@ actor {
       totalAppOpenCount;
       uniqueUserEstimate = uniqueUserCheck.size();
       recentAppOpenEvents = recentEventsArray;
+    };
+  };
+
+  // App Market Configuration Endpoints
+  public query ({ caller }) func getMarketConfig() : async MarketConfig {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Only administrators can view market settings in secure state");
+    };
+    marketConfig;
+  };
+
+  public shared ({ caller }) func updateMarketConfig(config : MarketConfig) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("You do not have permission to update market settings");
+    };
+    marketConfig := config;
+  };
+
+  public shared ({ caller }) func publish() : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("You do not have permission to publish to the market");
+    };
+    marketConfig := {
+      marketConfig with
+      isPublished = true
     };
   };
 
