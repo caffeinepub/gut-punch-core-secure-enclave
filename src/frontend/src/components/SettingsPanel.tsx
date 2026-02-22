@@ -79,10 +79,6 @@ export default function SettingsPanel() {
         toast.success('Successfully logged out');
     };
 
-    const handleNavigateToAdmin = () => {
-        setActiveTab('admin');
-    };
-
     const getSubscriptionStatusLabel = () => {
         if (subscriptionInfo.status === 'proMonthly') return 'Pro Monthly';
         if (subscriptionInfo.status === 'proAnnual') return 'Pro Annual';
@@ -325,63 +321,63 @@ export default function SettingsPanel() {
                                     min={100}
                                     max={2000}
                                     step={100}
-                                    className="py-4"
+                                    className="w-full"
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Lower values = faster analysis, higher values = less frequent updates
+                                    Delay before analysis triggers (lower = faster, higher = less CPU usage)
                                 </p>
                             </div>
 
                             {/* Firebase Status */}
-                            <div className="space-y-3">
-                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Cloud Storage Status</Label>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Cloud Sync Status</Label>
                                 <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-background/50 p-3">
                                     {isFirebaseAvailable ? (
                                         <>
                                             <Wifi className="h-4 w-4 text-primary" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium">Connected</p>
-                                                <p className="text-xs text-muted-foreground">History sync enabled</p>
+                                            <div>
+                                                <p className="text-sm font-medium">Online</p>
+                                                <p className="text-xs text-muted-foreground">Cloud features available</p>
                                             </div>
-                                            <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
-                                                ONLINE
-                                            </Badge>
                                         </>
                                     ) : (
                                         <>
                                             <WifiOff className="h-4 w-4 text-muted-foreground" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium">Offline Mode</p>
-                                                <p className="text-xs text-muted-foreground">Using local storage only</p>
+                                            <div>
+                                                <p className="text-sm font-medium">Offline</p>
+                                                <p className="text-xs text-muted-foreground">Local storage only</p>
                                             </div>
-                                            <Badge variant="outline" className="border-muted/30">
-                                                LOCAL
-                                            </Badge>
                                         </>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Clear History */}
+                            {/* History Management */}
                             <div className="space-y-3">
-                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Data Management</Label>
-                                <Button
-                                    onClick={handleClearHistory}
-                                    variant="destructive"
-                                    className="w-full"
-                                    disabled={history.length === 0}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Clear All History ({history.length} items)
-                                </Button>
-                                <p className="text-xs text-muted-foreground">
-                                    Permanently delete all stored analysis history from this device
-                                </p>
+                                <Label className="text-sm font-medium font-mono uppercase tracking-wider">Analysis History</Label>
+                                <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background/50 p-3">
+                                    <div>
+                                        <p className="text-sm font-medium">{history.length} items stored</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {settings.persistHistory ? 'Persistence enabled' : 'Persistence disabled'}
+                                        </p>
+                                    </div>
+                                    <Button
+                                        onClick={handleClearHistory}
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={history.length === 0}
+                                        className="border-destructive/30 text-destructive hover:bg-destructive/10"
+                                    >
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Clear All
+                                    </Button>
+                                </div>
                             </div>
                         </TabsContent>
 
                         <TabsContent value="subscription" className="mt-6">
-                            <ProAccessUpgrade onNavigateToAdmin={handleNavigateToAdmin} />
+                            <ProAccessUpgrade />
                         </TabsContent>
 
                         {isAdmin && (

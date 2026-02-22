@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { UserProfile, Product, ShoppingItem, StripeConfiguration, UsageStats, MarketConfig } from '../backend';
+import type { UserProfile, Product, ShoppingItem, StripeConfiguration, UsageStats, MarketConfig, UserUsageStats } from '../backend';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -58,7 +58,7 @@ export function useIsCallerAdmin() {
             }
         },
         enabled: !!actor && !actorFetching && !!identity,
-        staleTime: 1000 * 60 * 10, // 10 minutes
+        staleTime: 1000 * 60 * 10,
         retry: false,
     });
 }
@@ -77,7 +77,7 @@ export function useGetProducts() {
     });
 }
 
-// Stripe Queries - Hardened to never throw on initial render
+// Stripe Queries
 export function useIsStripeConfigured() {
     const { actor, isFetching: actorFetching } = useActor();
 
@@ -154,13 +154,11 @@ export function useTrackAppOpen() {
     return useMutation({
         mutationFn: async () => {
             if (!actor) {
-                // Fail silently if actor not available
                 return;
             }
             try {
                 await actor.trackAppOpen();
             } catch (error) {
-                // Fail silently - don't break UI
                 console.error('Failed to track app open:', error);
             }
         },
@@ -180,6 +178,37 @@ export function useGetUsageStats() {
         },
         enabled: !!actor && !actorFetching && isAdmin === true,
         retry: false,
+    });
+}
+
+// User Usage Stats (Daily Scans)
+export function useGetCallerUsageStats() {
+    const { actor, isFetching: actorFetching } = useActor();
+    const { identity } = useInternetIdentity();
+
+    return useQuery<UserUsageStats | null>({
+        queryKey: ['callerUsageStats', identity?.getPrincipal().toString()],
+        queryFn: async () => {
+            if (!actor) throw new Error('Actor not available');
+            return actor.getCallerUsageStats();
+        },
+        enabled: !!actor && !actorFetching && !!identity,
+        retry: false,
+    });
+}
+
+export function useIncrementDailyScans() {
+    const { actor } = useActor();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async () => {
+            if (!actor) throw new Error('Actor not available');
+            return actor.incrementDailyScans();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['callerUsageStats'] });
+        },
     });
 }
 

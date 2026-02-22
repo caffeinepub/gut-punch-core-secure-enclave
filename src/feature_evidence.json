@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-publish-to-market-section-in-the-admin-dashboard-that-allows-the-admin-to-configure-app-market-listing-settings-including-price-in-usd-app-description-for-the-marketplace-and-category-selection",
-      "featureTitle": "Add a 'Publish to Market' section in the Admin Dashboard that allows the admin to configure app market listing settings including price (in USD), app description for the marketplace, and category selection",
+      "featureId": "feature-implement-dark-heavy-mythical-theme-with-deep-black-charcoal-background-blood-red-ff0000-and-ember-orange-ff4500-accents-and-faint-cracked-stone-and-dragon-scale-textures-throughout-the-application",
+      "featureTitle": "Implement dark, heavy, mythical theme with deep black/charcoal background, blood-red (#FF0000) and ember-orange (#FF4500) accents, and faint cracked stone and dragon-scale textures throughout the application",
       "files": [
-        "frontend/src/components/AdminDashboard.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,7 +16,8 @@
         "stripe@3.0.0",
         "authorization@4.0.0",
         "http-outcalls@3.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-1"
@@ -24,11 +25,16 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-an-oisy-wallet-configuration-panel-in-the-admin-dashboard-where-the-admin-can-input-their-oisy-wallet-principal-id-and-select-their-preferred-payout-currency-usdc-bitcoin-or-icp",
-      "featureTitle": "Create an OISY wallet configuration panel in the Admin Dashboard where the admin can input their OISY wallet principal ID and select their preferred payout currency (USDC, Bitcoin, or ICP)",
+      "featureId": "feature-replace-existing-navigation-structure-with-a-left-side-menu-swipe-or-hamburger-containing-items-in-this-exact-order-chat-scan-consultant-safe-draft-console-profile-upgrade-to-pro",
+      "featureTitle": "Replace existing navigation structure with a left side menu (swipe or hamburger) containing items in this exact order: Chat, Scan, Consultant, Safe Draft, Console, Profile, Upgrade to Pro",
       "files": [
-        "frontend/src/components/AdminDashboard.tsx",
-        "frontend/src/lib/validation.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/components/BottomNav.tsx",
+        "frontend/src/components/ConsoleScreen.tsx",
+        "frontend/src/components/ConsultantScreen.tsx",
+        "frontend/src/components/SafeDraftScreen.tsx",
+        "frontend/src/components/ScanScreen.tsx",
+        "frontend/src/components/SideMenu.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -38,7 +44,8 @@
         "stripe@3.0.0",
         "authorization@4.0.0",
         "http-outcalls@3.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-2"
@@ -46,12 +53,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-the-current-app-market-publishing-status-in-the-admin-dashboard-showing-whether-the-app-is-published-the-current-price-connected-wallet-status-and-total-royalties-earned",
-      "featureTitle": "Display the current app market publishing status in the Admin Dashboard showing whether the app is published, the current price, connected wallet status, and total royalties earned",
+      "featureId": "feature-transform-home-chat-screen-to-display-large-gargoyle-dragon-background-with-wings-spread-and-glowing-eyes-big-glowing-blood-red-text-saying-ready-to-punch-prominent-start-a-gut-punch-button-styled-like-forged-metal-or-burning-stone-bottom-input-field-with-placeholder-type-your-punch-and-clear-scan-count-display-showing-scans-left-10-10-for-free-tier-or-unlimited-for-pro",
+      "featureTitle": "Transform home/chat screen to display large Gargoyle Dragon background with wings spread and glowing eyes, big glowing blood-red text saying 'Ready to Punch?', prominent 'START A GUT PUNCH' button styled like forged metal or burning stone, bottom input field with placeholder 'Type your punch…', and clear scan count display showing 'Scans left: 10/10' for free tier or 'Unlimited' for Pro",
       "files": [
-        "frontend/src/components/AdminDashboard.tsx",
-        "frontend/src/components/MarketPublishingStatus.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/HeroBanner.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -61,10 +67,107 @@
         "stripe@3.0.0",
         "authorization@4.0.0",
         "http-outcalls@3.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-scan-screen-to-display-scan-a-convo-or-profile-heading-and-show-scan-limit-reached-upgrade-to-pro-for-unlimited-message-after-10-scans-are-used-on-free-tier",
+      "featureTitle": "Update scan screen to display 'Scan a Convo or Profile' heading and show 'Scan Limit Reached – Upgrade to Pro for Unlimited' message after 10 scans are used on free tier",
+      "files": [
+        "frontend/src/components/ScanScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-therapist-pro-mode-interface-with-calmer-dragon-aesthetic-focused-design-and-tools-including-session-notes-resolution-guidance-and-session-management-features",
+      "featureTitle": "Create therapist/Pro mode interface with calmer dragon aesthetic, focused design, and tools including session notes, resolution guidance, and session management features",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SideMenu.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-all-user-facing-text-and-messaging-to-use-raw-direct-language-including-phrases-punch-through-the-bullshit-the-dragon-guards-your-truth-no-filters-no-games-and-eliminate-all-corporate-or-overly-polished-language",
+      "featureTitle": "Update all user-facing text and messaging to use raw, direct language including phrases 'Punch through the bullshit', 'The Dragon guards your truth', 'No filters. No games', and eliminate all corporate or overly polished language",
+      "files": [
+        "frontend/src/components/ProAccessUpgrade.tsx",
+        "frontend/src/components/ProfileView.tsx",
+        "frontend/src/components/ScanScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-branding-throughout-application-from-gut-punch-to-foreverraw-home-of-the-gargoyle-dragon-ensuring-the-gargoyle-dragon-is-the-central-visual-element-on-all-screens",
+      "featureTitle": "Update branding throughout application from 'GUT-PUNCH' to 'ForeverRaw – Home of the Gargoyle Dragon', ensuring the Gargoyle Dragon is the central visual element on all screens",
+      "files": [
+        "frontend/index.html",
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/ProfileView.tsx",
+        "frontend/src/components/SocialFeed.tsx",
+        "frontend/src/components/TopNavBar.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
       ],
       "confidence": "high"
     }

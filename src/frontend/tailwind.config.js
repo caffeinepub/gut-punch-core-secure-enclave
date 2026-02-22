@@ -73,7 +73,14 @@ export default {
                 sm: 'calc(var(--radius) - 4px)'
             },
             boxShadow: {
-                xs: '0 1px 2px 0 rgba(0,0,0,0.05)'
+                xs: '0 1px 2px 0 rgba(0,0,0,0.05)',
+                'blood': '0 0 20px oklch(var(--primary) / 0.5)',
+                'ember': '0 0 20px oklch(var(--accent) / 0.5)'
+            },
+            fontFamily: {
+                'display': ['Cinzel', 'serif'],
+                'heading': ['Bebas Neue', 'sans-serif'],
+                'body': ['Inter', 'sans-serif']
             },
             keyframes: {
                 'accordion-down': {
@@ -83,11 +90,16 @@ export default {
                 'accordion-up': {
                     from: { height: 'var(--radix-accordion-content-height)' },
                     to: { height: '0' }
+                },
+                'pulse-glow': {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0.6' }
                 }
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
-                'accordion-up': 'accordion-up 0.2s ease-out'
+                'accordion-up': 'accordion-up 0.2s ease-out',
+                'pulse-glow': 'pulse-glow 2s ease-in-out infinite'
             }
         }
     },

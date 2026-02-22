@@ -5,21 +5,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { toast } from 'sonner';
+import { useNavigate } from '@tanstack/react-router';
 
 export default function PaymentSuccess() {
     const { updateSubscriptionInfo, subscriptionInfo } = useApp();
     const [verifying, setVerifying] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Simulate payment verification and activate Pro Access
         const verifyPayment = async () => {
             try {
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for processing
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                // Update subscription to Pro Monthly (default for successful payment)
                 updateSubscriptionInfo({
                     status: 'proMonthly',
-                    expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000), // 30 days from now
+                    expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000),
                     lastChecked: Date.now(),
                 });
                 
@@ -35,7 +35,7 @@ export default function PaymentSuccess() {
     }, [updateSubscriptionInfo]);
 
     const handleContinue = () => {
-        window.location.href = '/';
+        navigate({ to: '/' });
     };
 
     if (verifying) {
@@ -68,7 +68,7 @@ export default function PaymentSuccess() {
                             )}
                         </div>
                     </div>
-                    <CardTitle className="text-center font-mono uppercase tracking-wider">
+                    <CardTitle className="text-center font-bold uppercase tracking-wider">
                         {isPro ? 'Payment Successful!' : 'Payment Processing'}
                     </CardTitle>
                     <CardDescription className="text-center">
@@ -83,12 +83,12 @@ export default function PaymentSuccess() {
                         <Alert className="border-primary/30 bg-primary/5">
                             <CheckCircle className="h-4 w-4 text-primary" />
                             <AlertDescription>
-                                Welcome to SecureDraft AI Pro! You now have access to:
+                                Welcome to Gut Punch Pro! You now have access to:
                                 <ul className="mt-2 space-y-1 text-sm">
                                     <li>• Unlimited scans</li>
-                                    <li>• Full resolution metrics</li>
-                                    <li>• Gemini AI chat access</li>
-                                    <li>• Priority analysis</li>
+                                    <li>• Therapist tools</li>
+                                    <li>• Priority support</li>
+                                    <li>• Advanced features</li>
                                 </ul>
                             </AlertDescription>
                         </Alert>
@@ -96,19 +96,18 @@ export default function PaymentSuccess() {
                         <Alert>
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
-                                Your payment is being processed. This may take a few moments. 
-                                If your Pro Access is not activated within 5 minutes, please contact support.
+                                Your payment is being processed. This may take a few moments.
                             </AlertDescription>
                         </Alert>
                     )}
 
-                    <Button onClick={handleContinue} className="w-full">
+                    <Button onClick={handleContinue} className="w-full bg-[#00FFFF] hover:bg-[#00FFFF]/90 text-black">
                         Continue to App
                         <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
 
                     <p className="text-center text-xs text-muted-foreground">
-                        You can manage your subscription anytime from the Settings panel.
+                        You can manage your subscription anytime from Settings.
                     </p>
                 </CardContent>
             </Card>

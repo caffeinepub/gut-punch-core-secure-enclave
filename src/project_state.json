@@ -1,38 +1,72 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Gut-Punch: A dark-themed secure enclave analytics app with custom domain setup, social media preview cards, Pro subscription tiers, and landing page emphasizing the 'Handshake Protocol' narrative. User wants to publish to Caffeine App Market with paid clones and configure OISY wallet for royalty payments.",
+  "summary": "ForeverRaw – relationship communication app with dark mythical dragon aesthetic. Free tier: unlimited chat + 10 scans/day. Pro tier: unlimited scans + therapist tools. Main features: gut punch chat, conversation/profile scanning, consultant mode, safe draft, console, therapist mode.",
   "architectural_notes": [
-    "Custom domain configuration available in Admin Dashboard (Pro tier required)",
-    "Social media preview cards configured with title, description, and branding",
-    "Pro subscription required for backdoor/admin access (Stripe/Gemini key config)",
-    "Share functionality copies app URL to clipboard for universal sharing",
-    "Landing page narrative focused on 'The Handshake Protocol' with tiered sovereignty model"
+    "Free tier: Unlimited chat + 10 scans per day",
+    "Pro tier: Unlimited scans + full therapist/client tools",
+    "Chat is the main/host screen at all times",
+    "Navigation via left side menu (swipe or hamburger)",
+    "Design: Deep black/charcoal background, blood-red and ember-orange accents, cracked stone and dragon-scale textures",
+    "Gargoyle Dragon as central visual throughout"
   ],
   "known_issues": [],
   "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Gargoyle Dragon with wings spread and glowing eyes for background, dark mythical style, suitable for hero section (gargoyle-dragon-hero.dim_1920x1080.png)\n- Gargoyle Dragon logo icon version for header/branding, dark background with red/orange accents (gargoyle-dragon-logo.dim_256x256.png)\n- Forged metal or burning stone texture for button background, dark with ember glow (button-texture.dim_400x120.png)\n- Cracked stone texture overlay, subtle, tileable, dark (stone-texture.dim_512x512.png)\n- Dragon scale texture overlay, subtle, tileable, dark (dragon-scale-texture.dim_512x512.png)",
   "existing_features": [
     {
-      "id": "feature-add-a-publish-to-market-section-in-the-admin-dashboard-that-allows-the-admin-to-configure-app-market-listing-settings-including-price-in-usd-app-description-for-the-marketplace-and-category-selection",
-      "title": "Add a 'Publish to Market' section in the Admin Dashboard that allows the admin to configure app market listing settings including price (in USD), app description for the marketplace, and category selection",
+      "id": "feature-implement-dark-heavy-mythical-theme-with-deep-black-charcoal-background-blood-red-ff0000-and-ember-orange-ff4500-accents-and-faint-cracked-stone-and-dragon-scale-textures-throughout-the-application",
+      "title": "Implement dark, heavy, mythical theme with deep black/charcoal background, blood-red (#FF0000) and ember-orange (#FF4500) accents, and faint cracked stone and dragon-scale textures throughout the application",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-an-oisy-wallet-configuration-panel-in-the-admin-dashboard-where-the-admin-can-input-their-oisy-wallet-principal-id-and-select-their-preferred-payout-currency-usdc-bitcoin-or-icp",
-      "title": "Create an OISY wallet configuration panel in the Admin Dashboard where the admin can input their OISY wallet principal ID and select their preferred payout currency (USDC, Bitcoin, or ICP)",
+      "id": "feature-replace-existing-navigation-structure-with-a-left-side-menu-swipe-or-hamburger-containing-items-in-this-exact-order-chat-scan-consultant-safe-draft-console-profile-upgrade-to-pro",
+      "title": "Replace existing navigation structure with a left side menu (swipe or hamburger) containing items in this exact order: Chat, Scan, Consultant, Safe Draft, Console, Profile, Upgrade to Pro",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-the-current-app-market-publishing-status-in-the-admin-dashboard-showing-whether-the-app-is-published-the-current-price-connected-wallet-status-and-total-royalties-earned",
-      "title": "Display the current app market publishing status in the Admin Dashboard showing whether the app is published, the current price, connected wallet status, and total royalties earned",
+      "id": "feature-transform-home-chat-screen-to-display-large-gargoyle-dragon-background-with-wings-spread-and-glowing-eyes-big-glowing-blood-red-text-saying-ready-to-punch-prominent-start-a-gut-punch-button-styled-like-forged-metal-or-burning-stone-bottom-input-field-with-placeholder-type-your-punch-and-clear-scan-count-display-showing-scans-left-10-10-for-free-tier-or-unlimited-for-pro",
+      "title": "Transform home/chat screen to display large Gargoyle Dragon background with wings spread and glowing eyes, big glowing blood-red text saying 'Ready to Punch?', prominent 'START A GUT PUNCH' button styled like forged metal or burning stone, bottom input field with placeholder 'Type your punch…', and clear scan count display showing 'Scans left: 10/10' for free tier or 'Unlimited' for Pro",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-scan-screen-to-display-scan-a-convo-or-profile-heading-and-show-scan-limit-reached-upgrade-to-pro-for-unlimited-message-after-10-scans-are-used-on-free-tier",
+      "title": "Update scan screen to display 'Scan a Convo or Profile' heading and show 'Scan Limit Reached – Upgrade to Pro for Unlimited' message after 10 scans are used on free tier",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-therapist-pro-mode-interface-with-calmer-dragon-aesthetic-focused-design-and-tools-including-session-notes-resolution-guidance-and-session-management-features",
+      "title": "Create therapist/Pro mode interface with calmer dragon aesthetic, focused design, and tools including session notes, resolution guidance, and session management features",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-user-facing-text-and-messaging-to-use-raw-direct-language-including-phrases-punch-through-the-bullshit-the-dragon-guards-your-truth-no-filters-no-games-and-eliminate-all-corporate-or-overly-polished-language",
+      "title": "Update all user-facing text and messaging to use raw, direct language including phrases 'Punch through the bullshit', 'The Dragon guards your truth', 'No filters. No games', and eliminate all corporate or overly polished language",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-branding-throughout-application-from-gut-punch-to-foreverraw-home-of-the-gargoyle-dragon-ensuring-the-gargoyle-dragon-is-the-central-visual-element-on-all-screens",
+      "title": "Update branding throughout application from 'GUT-PUNCH' to 'ForeverRaw – Home of the Gargoyle Dragon', ensuring the Gargoyle Dragon is the central visual element on all screens",
+      "reqIds": [
+        "REQ-7"
       ],
       "version": 1
     }
@@ -40,26 +74,42 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Publish app to Caffeine App Market with paid clone pricing",
+      "summary": "Dark dragon aesthetic with Gargoyle Dragon branding throughout",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Configure OISY wallet for royalty payments (USDC/Bitcoin/ICP)",
+      "summary": "Left side menu navigation (swipe/hamburger) with ordered items: Chat, Scan, Consultant, Safe Draft, Console, Profile, Upgrade to Pro",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Home/Chat screen with Gargoyle Dragon background, 'Ready to Punch?' header, 'START A GUT PUNCH' button, message input, and scan counter display",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Scan screen for conversation or profile scanning with limit enforcement",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Therapist/Pro mode with calmer dragon aesthetic and session tools (notes, resolution guidance)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Add a backend endpoint to store and retrieve app market configuration including price, description, category, wallet principal, and payout currency preference",
-      "reqIds": [
-        "REQ-4"
-      ],
+      "summary": "Raw, direct tone throughout with phrases like 'Punch through the bullshit', 'The Dragon guards your truth', 'No filters. No games'",
+      "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Gut-Punch",
+  "projectName": "ForeverRaw",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

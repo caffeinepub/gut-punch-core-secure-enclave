@@ -8,6 +8,17 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
 export const Product = IDL.Record({
   'id' : IDL.Text,
   'name' : IDL.Text,
@@ -26,10 +37,40 @@ export const ShoppingItem = IDL.Record({
   'priceInCents' : IDL.Nat,
   'productDescription' : IDL.Text,
 });
+export const Punch = IDL.Record({
+  'id' : IDL.Text,
+  'content' : IDL.Text,
+  'views' : IDL.Nat,
+  'userId' : IDL.Principal,
+  'likes' : IDL.Nat,
+  'timestamp' : IDL.Int,
+});
+export const SubscriptionStatus = IDL.Variant({
+  'free' : IDL.Null,
+  'proMonthly' : IDL.Null,
+  'proAnnual' : IDL.Null,
+});
+export const SubscriptionUpdate = IDL.Record({
+  'status' : SubscriptionStatus,
+  'expiresAt' : IDL.Opt(IDL.Int),
+  'stripeSubscriptionId' : IDL.Opt(IDL.Text),
+});
+export const UserUsageStats = IDL.Record({
+  'dailyScans' : IDL.Nat,
+  'lastResetTime' : IDL.Int,
+});
 export const UserProfile = IDL.Record({
   'name' : IDL.Text,
   'email' : IDL.Opt(IDL.Text),
   'stripeCustomerId' : IDL.Opt(IDL.Text),
+});
+export const ChatMessage = IDL.Record({
+  'id' : IDL.Text,
+  'content' : IDL.Text,
+  'isRead' : IDL.Bool,
+  'receiverId' : IDL.Principal,
+  'timestamp' : IDL.Int,
+  'senderId' : IDL.Principal,
 });
 export const PayoutCurrency = IDL.Variant({
   'btc' : IDL.Null,
@@ -62,6 +103,15 @@ export const StripeSessionStatus = IDL.Variant({
   }),
   'failed' : IDL.Record({ 'error' : IDL.Text }),
 });
+export const TherapistSession = IDL.Record({
+  'id' : IDL.Text,
+  'resolutionTips' : IDL.Text,
+  'clientId' : IDL.Principal,
+  'isActive' : IDL.Bool,
+  'therapistId' : IDL.Principal,
+  'notes' : IDL.Text,
+  'timestamp' : IDL.Int,
+});
 export const Time = IDL.Int;
 export const UsageStats = IDL.Record({
   'uniqueUserEstimate' : IDL.Nat,
@@ -92,6 +142,32 @@ export const TransformationOutput = IDL.Record({
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addProduct' : IDL.Func([Product], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
@@ -101,22 +177,69 @@ export const idlService = IDL.Service({
       [IDL.Text],
       [],
     ),
+  'createPunch' : IDL.Func([IDL.Text], [IDL.Text], []),
+  'createTherapistSession' : IDL.Func(
+      [IDL.Principal, IDL.Text, IDL.Text],
+      [IDL.Text],
+      [],
+    ),
   'deleteProduct' : IDL.Func([IDL.Text], [], []),
+  'deletePunch' : IDL.Func([IDL.Text], [], []),
+  'deleteTherapistSession' : IDL.Func([IDL.Text], [], []),
+  'endTherapistSession' : IDL.Func([IDL.Text], [], []),
+  'getAllPunches' : IDL.Func([], [IDL.Vec(Punch)], ['query']),
+  'getCallerSubscription' : IDL.Func(
+      [],
+      [IDL.Opt(SubscriptionUpdate)],
+      ['query'],
+    ),
+  'getCallerUsageStats' : IDL.Func([], [IDL.Opt(UserUsageStats)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getConversation' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(ChatMessage)],
+      ['query'],
+    ),
   'getMarketConfig' : IDL.Func([], [MarketConfig], ['query']),
+  'getOnlineStatus' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
   'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getPunch' : IDL.Func([IDL.Text], [IDL.Opt(Punch)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+  'getTherapistSession' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(TherapistSession)],
+      ['query'],
+    ),
+  'getTherapistSessionByTherapist' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(TherapistSession)],
+      ['query'],
+    ),
+  'getTherapistSessionsByClient' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(TherapistSession)],
+      ['query'],
+    ),
+  'getTrendingPunches' : IDL.Func([IDL.Nat], [IDL.Vec(Punch)], ['query']),
+  'getUnreadMessageCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getUsageStats' : IDL.Func([], [UsageStats], []),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'incrementDailyScans' : IDL.Func([], [], []),
+  'incrementPunchViews' : IDL.Func([IDL.Text], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
+  'likePunch' : IDL.Func([IDL.Text], [], []),
+  'markMessageAsRead' : IDL.Func([IDL.Text], [], []),
   'publish' : IDL.Func([], [], []),
+  'resetFreeTierUsage' : IDL.Func([], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [IDL.Text], []),
+  'setOnlineStatus' : IDL.Func([IDL.Bool], [], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'trackAppOpen' : IDL.Func([], [], []),
   'transform' : IDL.Func(
@@ -124,13 +247,31 @@ export const idlService = IDL.Service({
       [TransformationOutput],
       ['query'],
     ),
+  'unlikePunch' : IDL.Func([IDL.Text], [], []),
+  'updateCallerSubscription' : IDL.Func([SubscriptionUpdate], [], []),
   'updateMarketConfig' : IDL.Func([MarketConfig], [], []),
   'updateProduct' : IDL.Func([Product], [], []),
+  'updateTherapistSession' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
   const Product = IDL.Record({
     'id' : IDL.Text,
     'name' : IDL.Text,
@@ -149,10 +290,40 @@ export const idlFactory = ({ IDL }) => {
     'priceInCents' : IDL.Nat,
     'productDescription' : IDL.Text,
   });
+  const Punch = IDL.Record({
+    'id' : IDL.Text,
+    'content' : IDL.Text,
+    'views' : IDL.Nat,
+    'userId' : IDL.Principal,
+    'likes' : IDL.Nat,
+    'timestamp' : IDL.Int,
+  });
+  const SubscriptionStatus = IDL.Variant({
+    'free' : IDL.Null,
+    'proMonthly' : IDL.Null,
+    'proAnnual' : IDL.Null,
+  });
+  const SubscriptionUpdate = IDL.Record({
+    'status' : SubscriptionStatus,
+    'expiresAt' : IDL.Opt(IDL.Int),
+    'stripeSubscriptionId' : IDL.Opt(IDL.Text),
+  });
+  const UserUsageStats = IDL.Record({
+    'dailyScans' : IDL.Nat,
+    'lastResetTime' : IDL.Int,
+  });
   const UserProfile = IDL.Record({
     'name' : IDL.Text,
     'email' : IDL.Opt(IDL.Text),
     'stripeCustomerId' : IDL.Opt(IDL.Text),
+  });
+  const ChatMessage = IDL.Record({
+    'id' : IDL.Text,
+    'content' : IDL.Text,
+    'isRead' : IDL.Bool,
+    'receiverId' : IDL.Principal,
+    'timestamp' : IDL.Int,
+    'senderId' : IDL.Principal,
   });
   const PayoutCurrency = IDL.Variant({
     'btc' : IDL.Null,
@@ -185,6 +356,15 @@ export const idlFactory = ({ IDL }) => {
     }),
     'failed' : IDL.Record({ 'error' : IDL.Text }),
   });
+  const TherapistSession = IDL.Record({
+    'id' : IDL.Text,
+    'resolutionTips' : IDL.Text,
+    'clientId' : IDL.Principal,
+    'isActive' : IDL.Bool,
+    'therapistId' : IDL.Principal,
+    'notes' : IDL.Text,
+    'timestamp' : IDL.Int,
+  });
   const Time = IDL.Int;
   const UsageStats = IDL.Record({
     'uniqueUserEstimate' : IDL.Nat,
@@ -212,6 +392,32 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addProduct' : IDL.Func([Product], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
@@ -221,22 +427,69 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Text],
         [],
       ),
+    'createPunch' : IDL.Func([IDL.Text], [IDL.Text], []),
+    'createTherapistSession' : IDL.Func(
+        [IDL.Principal, IDL.Text, IDL.Text],
+        [IDL.Text],
+        [],
+      ),
     'deleteProduct' : IDL.Func([IDL.Text], [], []),
+    'deletePunch' : IDL.Func([IDL.Text], [], []),
+    'deleteTherapistSession' : IDL.Func([IDL.Text], [], []),
+    'endTherapistSession' : IDL.Func([IDL.Text], [], []),
+    'getAllPunches' : IDL.Func([], [IDL.Vec(Punch)], ['query']),
+    'getCallerSubscription' : IDL.Func(
+        [],
+        [IDL.Opt(SubscriptionUpdate)],
+        ['query'],
+      ),
+    'getCallerUsageStats' : IDL.Func([], [IDL.Opt(UserUsageStats)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getConversation' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(ChatMessage)],
+        ['query'],
+      ),
     'getMarketConfig' : IDL.Func([], [MarketConfig], ['query']),
+    'getOnlineStatus' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getPunch' : IDL.Func([IDL.Text], [IDL.Opt(Punch)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+    'getTherapistSession' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(TherapistSession)],
+        ['query'],
+      ),
+    'getTherapistSessionByTherapist' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(TherapistSession)],
+        ['query'],
+      ),
+    'getTherapistSessionsByClient' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(TherapistSession)],
+        ['query'],
+      ),
+    'getTrendingPunches' : IDL.Func([IDL.Nat], [IDL.Vec(Punch)], ['query']),
+    'getUnreadMessageCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getUsageStats' : IDL.Func([], [UsageStats], []),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'incrementDailyScans' : IDL.Func([], [], []),
+    'incrementPunchViews' : IDL.Func([IDL.Text], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
+    'likePunch' : IDL.Func([IDL.Text], [], []),
+    'markMessageAsRead' : IDL.Func([IDL.Text], [], []),
     'publish' : IDL.Func([], [], []),
+    'resetFreeTierUsage' : IDL.Func([], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'sendMessage' : IDL.Func([IDL.Principal, IDL.Text], [IDL.Text], []),
+    'setOnlineStatus' : IDL.Func([IDL.Bool], [], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'trackAppOpen' : IDL.Func([], [], []),
     'transform' : IDL.Func(
@@ -244,8 +497,15 @@ export const idlFactory = ({ IDL }) => {
         [TransformationOutput],
         ['query'],
       ),
+    'unlikePunch' : IDL.Func([IDL.Text], [], []),
+    'updateCallerSubscription' : IDL.Func([SubscriptionUpdate], [], []),
     'updateMarketConfig' : IDL.Func([MarketConfig], [], []),
     'updateProduct' : IDL.Func([Product], [], []),
+    'updateTherapistSession' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+        [],
+        [],
+      ),
   });
 };
 

@@ -10,6 +10,14 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface ChatMessage {
+  'id' : string,
+  'content' : string,
+  'isRead' : boolean,
+  'receiverId' : Principal,
+  'timestamp' : bigint,
+  'senderId' : Principal,
+}
 export type MarketCategory = { 'utility' : null } |
   { 'finance' : null } |
   { 'other' : null } |
@@ -36,6 +44,14 @@ export interface Product {
   'description' : string,
   'priceId' : string,
 }
+export interface Punch {
+  'id' : string,
+  'content' : string,
+  'views' : bigint,
+  'userId' : Principal,
+  'likes' : bigint,
+  'timestamp' : bigint,
+}
 export interface ShoppingItem {
   'productName' : string,
   'currency' : string,
@@ -51,6 +67,23 @@ export type StripeSessionStatus = {
     'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
   } |
   { 'failed' : { 'error' : string } };
+export type SubscriptionStatus = { 'free' : null } |
+  { 'proMonthly' : null } |
+  { 'proAnnual' : null };
+export interface SubscriptionUpdate {
+  'status' : SubscriptionStatus,
+  'expiresAt' : [] | [bigint],
+  'stripeSubscriptionId' : [] | [string],
+}
+export interface TherapistSession {
+  'id' : string,
+  'resolutionTips' : string,
+  'clientId' : Principal,
+  'isActive' : boolean,
+  'therapistId' : Principal,
+  'notes' : string,
+  'timestamp' : bigint,
+}
 export type Time = bigint;
 export interface TransformationInput {
   'context' : Uint8Array,
@@ -74,6 +107,21 @@ export interface UserProfile {
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface UserUsageStats {
+  'dailyScans' : bigint,
+  'lastResetTime' : bigint,
+}
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface http_header { 'value' : string, 'name' : string }
 export interface http_request_result {
   'status' : bigint,
@@ -81,6 +129,21 @@ export interface http_request_result {
   'headers' : Array<http_header>,
 }
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addProduct' : ActorMethod<[Product], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
@@ -89,23 +152,58 @@ export interface _SERVICE {
     [Array<ShoppingItem>, string, string],
     string
   >,
+  'createPunch' : ActorMethod<[string], string>,
+  'createTherapistSession' : ActorMethod<[Principal, string, string], string>,
   'deleteProduct' : ActorMethod<[string], undefined>,
+  'deletePunch' : ActorMethod<[string], undefined>,
+  'deleteTherapistSession' : ActorMethod<[string], undefined>,
+  'endTherapistSession' : ActorMethod<[string], undefined>,
+  'getAllPunches' : ActorMethod<[], Array<Punch>>,
+  'getCallerSubscription' : ActorMethod<[], [] | [SubscriptionUpdate]>,
+  'getCallerUsageStats' : ActorMethod<[], [] | [UserUsageStats]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getConversation' : ActorMethod<[Principal], Array<ChatMessage>>,
   'getMarketConfig' : ActorMethod<[], MarketConfig>,
+  'getOnlineStatus' : ActorMethod<[Principal], boolean>,
   'getProducts' : ActorMethod<[], Array<Product>>,
+  'getPunch' : ActorMethod<[string], [] | [Punch]>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getTherapistSession' : ActorMethod<[string], [] | [TherapistSession]>,
+  'getTherapistSessionByTherapist' : ActorMethod<
+    [Principal],
+    Array<TherapistSession>
+  >,
+  'getTherapistSessionsByClient' : ActorMethod<
+    [Principal],
+    Array<TherapistSession>
+  >,
+  'getTrendingPunches' : ActorMethod<[bigint], Array<Punch>>,
+  'getUnreadMessageCount' : ActorMethod<[], bigint>,
   'getUsageStats' : ActorMethod<[], UsageStats>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'incrementDailyScans' : ActorMethod<[], undefined>,
+  'incrementPunchViews' : ActorMethod<[string], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
+  'likePunch' : ActorMethod<[string], undefined>,
+  'markMessageAsRead' : ActorMethod<[string], undefined>,
   'publish' : ActorMethod<[], undefined>,
+  'resetFreeTierUsage' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'sendMessage' : ActorMethod<[Principal, string], string>,
+  'setOnlineStatus' : ActorMethod<[boolean], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'trackAppOpen' : ActorMethod<[], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
+  'unlikePunch' : ActorMethod<[string], undefined>,
+  'updateCallerSubscription' : ActorMethod<[SubscriptionUpdate], undefined>,
   'updateMarketConfig' : ActorMethod<[MarketConfig], undefined>,
   'updateProduct' : ActorMethod<[Product], undefined>,
+  'updateTherapistSession' : ActorMethod<
+    [string, string, string, boolean],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

@@ -1,83 +1,236 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Configure App Market Publishing and OISY Wallet Integration",
+  "title": "ForeverRaw brand transformation with Gargoyle Dragon theme and side menu navigation",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add 'Publish to Market' section in Admin Dashboard for configuring marketplace listing settings including price, description, and category",
+      "summary": "Implement dark, heavy, mythical theme with deep black/charcoal background, blood-red and ember-orange accents, and faint cracked stone and dragon-scale textures",
       "acceptanceCriteria": [
-        "Admin Dashboard displays a new 'App Market Publishing' tab or section",
-        "Form allows setting a price in USD for paid clones (minimum $0 for free)",
-        "Form includes a textarea for marketplace description (separate from app description)",
-        "Form includes category selection dropdown",
-        "Settings are saved to backend and persisted",
-        "Only admin users can access this configuration"
+        "All screens use deep black or charcoal (#1a1a1a or darker) as primary background",
+        "Blood-red (#FF0000) and ember-orange (#FF4500) used consistently for accents, CTAs, and highlights",
+        "Subtle texture overlays (cracked stone/dragon scales) visible on main backgrounds"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/AdminDashboard.tsx",
+          "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Add a new 'Market Publishing' tab to the existing AdminDashboard component. Create a form section that includes: a number input for price in USD (min 0), a textarea for marketplace description, and a select dropdown for category (using MarketCategory enum values from backend.d.ts). Wire the form to call the backend updateMarketConfig method using the useActor hook. Display current market configuration by fetching data from getMarketConfig. Apply admin-only access control following existing patterns in the component. Verify the authorization component's usage instructions before implementing."
+          "description": "Replace existing color scheme with ForeverRaw theme: deep black/charcoal backgrounds (#0a0a0a, #1a1a1a), blood-red (#FF0000) primary accent, ember-orange (#FF4500) secondary accent. Add CSS background-image properties for subtle cracked stone (frontend/public/assets/generated/stone-texture.dim_512x512.png) and dragon scale (frontend/public/assets/generated/dragon-scale-texture.dim_512x512.png) textures with low opacity overlay. Remove existing cyan/neon colors and replace with mythical dragon aesthetic."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/tailwind.config.js",
           "operation": "modify",
-          "description": "Add two new React Query hooks: useGetMarketConfig to fetch current market configuration using actor.getMarketConfig(), and useUpdateMarketConfig as a mutation hook to update market settings using actor.updateMarketConfig(config). Both hooks should check for actor availability and follow existing patterns in the file. The mutation should invalidate the market config query on success."
+          "description": "Update Tailwind theme colors to ForeverRaw palette: replace current color definitions with blood-red (#FF0000) as primary, ember-orange (#FF4500) as secondary, deep charcoal (#1a1a1a) as background. Add custom utility classes for texture overlays. Remove existing color scheme references."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Create OISY wallet configuration panel in Admin Dashboard for wallet principal ID and payout currency selection",
+      "summary": "Replace existing navigation structure with a left side menu containing Chat, Scan, Consultant, Safe Draft, Console, Profile, Upgrade to Pro",
       "acceptanceCriteria": [
-        "New 'Wallet Configuration' section appears in Admin Dashboard",
-        "Input field for OISY wallet principal ID with validation",
-        "Radio buttons or dropdown for selecting payout currency (USDC, Bitcoin, ICP)",
-        "Display current wallet configuration status",
-        "Backend stores wallet principal and currency preference",
-        "Only admin users can configure wallet settings"
+        "Left side menu is accessible via swipe gesture or hamburger icon",
+        "Menu items appear in exact order specified",
+        "Current active screen is visually indicated in the menu",
+        "Menu overlays content and can be dismissed"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/AdminDashboard.tsx",
-          "operation": "modify",
-          "description": "Add a 'Wallet Configuration' section within the AdminDashboard component. Include a text input for OISY wallet principal ID with Internet Computer principal format validation (basic format check for principal string). Add radio buttons or a select dropdown for payout currency options (USDC, Bitcoin, ICP) using the PayoutCurrency enum from backend.d.ts. Display current wallet status by fetching walletPrincipal and payoutCurrency from the MarketConfig. Wire inputs to update the market configuration via the useUpdateMarketConfig hook. Show connection status based on whether walletPrincipal is set. Apply admin-only access control. Verify the authorization component's usage instructions before implementing."
+          "path": "frontend/src/components/SideMenu.tsx",
+          "operation": "create",
+          "description": "Create left side menu component with hamburger toggle icon, swipe gesture support, and menu items in exact order: Chat, Scan, Consultant, Safe Draft, Console, Profile, Upgrade to Pro. Include active route highlighting with blood-red indicator, overlay backdrop with dismiss functionality, slide-in animation from left. Use ForeverRaw theme styling with charcoal background and dragon-scale texture overlay from frontend/public/assets/generated/dragon-scale-texture.dim_512x512.png."
         },
         {
-          "path": "frontend/src/lib/validation.ts",
+          "path": "frontend/src/components/BottomNav.tsx",
+          "operation": "delete",
+          "description": "Remove existing bottom navigation bar as navigation is now handled by left side menu."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Remove BottomNav import and component usage. Add SideMenu component to layout wrapping all routes. Update layout structure to accommodate side menu instead of bottom navigation."
+        },
+        {
+          "path": "frontend/src/components/ScanScreen.tsx",
           "operation": "create",
-          "description": "Create a validation utility file with a function validatePrincipalId that performs basic format validation for Internet Computer principal IDs (checking for alphanumeric characters, hyphens, and proper length). Export this function for use in the wallet configuration form."
+          "description": "Create scan screen component accessible from side menu. Will be wired with scan functionality in REQ-4."
+        },
+        {
+          "path": "frontend/src/components/ConsultantScreen.tsx",
+          "operation": "create",
+          "description": "Create consultant/resolution help screen component accessible from side menu. Displays resolution guidance tools with dragon aesthetic."
+        },
+        {
+          "path": "frontend/src/components/SafeDraftScreen.tsx",
+          "operation": "create",
+          "description": "Create Safe Draft screen component accessible from side menu."
+        },
+        {
+          "path": "frontend/src/components/ConsoleScreen.tsx",
+          "operation": "create",
+          "description": "Create Console screen component accessible from side menu."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Display current app market publishing status in Admin Dashboard showing publish state, price, wallet status, and royalties earned",
+      "summary": "Transform home/chat screen with Gargoyle Dragon background, 'Ready to Punch?' headline, forged metal button, input field, and scan counter",
       "acceptanceCriteria": [
-        "Dashboard shows publishing status (Published/Unpublished)",
-        "If published, display the current clone price",
-        "Show wallet connection status (Connected/Not Connected)",
-        "Display wallet principal if connected",
-        "Show selected payout currency",
-        "Display total royalties earned (can be placeholder initially)",
-        "Provide a 'Publish Now' or 'Update Listing' button"
+        "Gargoyle Dragon image covers background with wings spread and glowing eyes visible",
+        "'Ready to Punch?' text is large, glowing, and blood-red colored",
+        "'START A GUT PUNCH' button has forged metal or burning stone visual treatment",
+        "Input field at bottom shows 'Type your punch…' placeholder",
+        "Scan counter displays '10/10' for free users and 'Unlimited' for Pro subscribers",
+        "Scan counter updates in real-time as scans are used"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/MarketPublishingStatus.tsx",
+          "path": "frontend/src/components/ChatInterface.tsx",
+          "operation": "modify",
+          "description": "Transform chat interface into ForeverRaw home screen. Add full-screen Gargoyle Dragon background image (frontend/public/assets/generated/gargoyle-dragon-hero.dim_1200x600.png) with wings spread and glowing eyes. Display large glowing blood-red text 'Ready to Punch?' as hero headline with glow effect. Replace existing message input with bottom-aligned input showing 'Type your punch…' placeholder. Add prominent 'START A GUT PUNCH' button styled with forged metal/burning stone appearance using frontend/public/assets/generated/button-texture.dim_400x120.png as background texture. Integrate scan counter display showing 'Scans left: X/10' for free tier or 'Unlimited' for Pro, fetched from useGetCallerUsageStats hook and subscription status from AppContext."
+        },
+        {
+          "path": "frontend/src/components/HeroBanner.tsx",
+          "operation": "delete",
+          "description": "Remove existing hero banner component as hero section is now integrated into ChatInterface."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Replace 'GUT-PUNCH' branding with 'ForeverRaw – Home of the Gargoyle Dragon'. Update logo to use Gargoyle Dragon icon (frontend/public/assets/generated/dragon-head-logo.dim_64x64.png). Apply ForeverRaw theme styling with charcoal background and blood-red accents."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Update scan screen with heading and scan limit messaging for free tier users",
+      "acceptanceCriteria": [
+        "Scan screen displays 'Scan a Convo or Profile' as main heading",
+        "After 10th scan on free tier, display 'Scan Limit Reached – Upgrade to Pro for Unlimited' message",
+        "Scan functionality is blocked for free users after limit reached",
+        "Pro users see no scan limit message"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ScanScreen.tsx",
+          "operation": "modify",
+          "description": "Add 'Scan a Convo or Profile' heading with blood-red styling. Implement scan limit check using useGetCallerUsageStats and subscription status from AppContext. Display 'Scan Limit Reached – Upgrade to Pro for Unlimited' message with ember-orange alert styling when dailyScans >= 10 for free tier users. Block scan functionality and show upgrade button when limit reached. Pro users see 'Unlimited' indicator instead. Wire increment scan count using incrementDailyScans backend capability after successful scan."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Create therapist/Pro mode interface with calmer dragon aesthetic and session management tools",
+      "acceptanceCriteria": [
+        "Therapist mode maintains dark dragon theme but with muted, calmer color palette",
+        "Session notes feature allows creating and saving notes",
+        "Resolution guidance tools are accessible and functional",
+        "Session management tools help track and organize therapeutic sessions",
+        "Only accessible to Pro tier users"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/TherapistModeScreen.tsx",
           "operation": "create",
-          "description": "Create a new component that displays the current market publishing status. Use the useGetMarketConfig hook to fetch market configuration data. Display isPublished status with visual indicator (Published/Unpublished badge). Show priceUSD when published. Display wallet connection status based on walletPrincipal presence (Connected/Not Connected). Show walletPrincipal value if connected. Display payoutCurrency selection. Show totalRoyaltiesEarned from MarketConfig (format as currency). Include a button that triggers the backend publish() method when clicked. Use shadcn/ui components (Card, Badge, Button) for consistent styling. Handle loading and error states. Verify the build-template-react component's usage instructions before implementing."
+          "description": "Create therapist/Pro mode interface with calmer dragon aesthetic using muted blood-red and charcoal tones. Include session notes editor, resolution guidance display, and session management list. Fetch therapist sessions using backend capabilities getTherapistSessionByTherapist and getTherapistSessionsByClient. Implement create, update, and end session functionality. Add Pro tier access guard checking subscription status from AppContext - redirect free users to upgrade screen. Display dragon-scale texture background from frontend/public/assets/generated/dragon-scale-texture.dim_512x512.png with reduced opacity for calmer appearance."
         },
         {
-          "path": "frontend/src/components/AdminDashboard.tsx",
-          "operation": "modify",
-          "description": "Import and render the MarketPublishingStatus component at the top of the Market Publishing tab section to display current status before the configuration forms. Ensure proper layout and spacing with existing dashboard content."
+          "path": "frontend/src/hooks/useTherapistSessions.ts",
+          "operation": "create",
+          "description": "Create React Query hooks for therapist session operations: useCreateTherapistSession, useUpdateTherapistSession, useEndTherapistSession, useGetTherapistSessions (by therapist and by client), and useGetTherapistSession. Wire to backend capabilities createTherapistSession, updateTherapistSession, endTherapistSession, getTherapistSessionByTherapist, getTherapistSessionsByClient, getTherapistSession."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a usePublish mutation hook that calls actor.publish() to publish the app to the market. Include proper error handling and invalidate the market config query on success to refresh the publishing status display."
+          "description": "Add route for /therapist path rendering TherapistModeScreen component. Register route in router configuration."
+        },
+        {
+          "path": "frontend/src/components/SideMenu.tsx",
+          "operation": "modify",
+          "description": "Wire Consultant menu item to navigate to /therapist route when clicked. Only show for Pro tier users."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Update all user-facing text to use raw, direct language eliminating corporate terminology",
+      "acceptanceCriteria": [
+        "All UI text uses direct, raw language without corporate terminology",
+        "Specified phrases appear naturally throughout the interface",
+        "Empty states, error messages, and help text maintain raw, aggressive tone",
+        "No overly polished or formal language in user-facing copy"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ChatInterface.tsx",
+          "operation": "modify",
+          "description": "Replace all user-facing text with raw language: 'Punch through the bullshit' for placeholder or CTA, 'The Dragon guards your truth' for security messaging. Remove any corporate or polished language."
+        },
+        {
+          "path": "frontend/src/components/ProfileView.tsx",
+          "operation": "modify",
+          "description": "Update profile screen copy with direct language: 'No filters. No games.' as profile tagline. Replace formal language with raw, aggressive tone in empty states and error messages."
+        },
+        {
+          "path": "frontend/src/components/ProAccessUpgrade.tsx",
+          "operation": "modify",
+          "description": "Update subscription upgrade copy with raw language: 'Punch through limits', 'The Dragon guards unlimited scans', 'No filters. No games'. Replace corporate pricing language with direct, aggressive messaging."
+        },
+        {
+          "path": "frontend/src/components/ErrorBoundary.tsx",
+          "operation": "modify",
+          "description": "Replace error messages with raw language: 'Something broke. Hit retry and punch through.' Eliminate polished error copy."
+        },
+        {
+          "path": "frontend/src/components/ScanScreen.tsx",
+          "operation": "modify",
+          "description": "Update scan limit message to raw language: 'Scan limit hit. Punch through to Pro for unlimited.' Replace formal upgrade messaging."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Update branding from 'GUT-PUNCH' to 'ForeverRaw – Home of the Gargoyle Dragon' with Gargoyle Dragon as central visual",
+      "acceptanceCriteria": [
+        "Application name displays as 'ForeverRaw' or 'ForeverRaw – Home of the Gargoyle Dragon' in headers and branding",
+        "Gargoyle Dragon image appears as central visual element on all major screens",
+        "Previous 'GUT-PUNCH' branding is completely replaced",
+        "Logo and favicon updated to reflect ForeverRaw branding"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Already modified in REQ-3 to display 'ForeverRaw – Home of the Gargoyle Dragon' branding with Gargoyle Dragon logo from frontend/public/assets/generated/dragon-head-logo.dim_64x64.png."
+        },
+        {
+          "path": "frontend/src/components/TopNavBar.tsx",
+          "operation": "modify",
+          "description": "Replace branding with 'ForeverRaw' and Gargoyle Dragon icon (frontend/public/assets/generated/dragon-icon-small.dim_32x32.png). Remove GUT-PUNCH references. Apply ForeverRaw theme styling."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Update footer branding to 'ForeverRaw – Home of the Gargoyle Dragon'. Add tagline 'The Dragon guards your truth'. Remove GUT-PUNCH references. Apply ForeverRaw theme styling with charcoal background."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Update page title to 'ForeverRaw – Home of the Gargoyle Dragon'. Update meta tags with ForeverRaw branding. Change favicon link to use Gargoyle Dragon icon frontend/public/assets/generated/dragon-icon-small.dim_32x32.png. Update social preview image reference to frontend/public/assets/generated/social-preview.dim_1200x630.png."
+        },
+        {
+          "path": "frontend/src/components/DiscoverView.tsx",
+          "operation": "modify",
+          "description": "Add Gargoyle Dragon background image (frontend/public/assets/generated/gargoyle-dragon-hero.dim_1200x600.png) as subtle background element. Update section headings to ForeverRaw branding."
+        },
+        {
+          "path": "frontend/src/components/ProfileView.tsx",
+          "operation": "modify",
+          "description": "Add subtle Gargoyle Dragon visual element from frontend/public/assets/generated/dragon-scale-texture.dim_512x512.png as background texture. Update branding references from GUT-PUNCH to ForeverRaw."
+        },
+        {
+          "path": "frontend/src/components/SocialFeed.tsx",
+          "operation": "modify",
+          "description": "Integrate Gargoyle Dragon imagery throughout feed. Update branding references. Apply dragon-scale texture overlay from frontend/public/assets/generated/dragon-scale-texture.dim_512x512.png to feed background."
         }
       ]
     }

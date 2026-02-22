@@ -2,14 +2,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { XCircle, ArrowLeft, RefreshCw } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
 
 export default function PaymentFailure() {
+    const navigate = useNavigate();
+
     const handleRetry = () => {
-        window.location.href = '/?tab=console';
+        navigate({ to: '/admin' });
     };
 
     const handleGoBack = () => {
-        window.location.href = '/';
+        navigate({ to: '/' });
     };
 
     return (
@@ -21,7 +24,7 @@ export default function PaymentFailure() {
                             <XCircle className="h-10 w-10 text-destructive" />
                         </div>
                     </div>
-                    <CardTitle className="text-center font-mono uppercase tracking-wider">
+                    <CardTitle className="text-center font-bold uppercase tracking-wider">
                         Payment Cancelled
                     </CardTitle>
                     <CardDescription className="text-center">
@@ -37,7 +40,7 @@ export default function PaymentFailure() {
                     </Alert>
 
                     <div className="space-y-2">
-                        <Button onClick={handleRetry} className="w-full" variant="default">
+                        <Button onClick={handleRetry} className="w-full bg-[#00FFFF] hover:bg-[#00FFFF]/90 text-black">
                             <RefreshCw className="mr-2 h-4 w-4" />
                             Try Again
                         </Button>
@@ -48,7 +51,7 @@ export default function PaymentFailure() {
                     </div>
 
                     <p className="text-center text-xs text-muted-foreground">
-                        If you're experiencing issues with payment, please contact support for assistance.
+                        If you're experiencing issues with payment, please contact support.
                     </p>
                 </CardContent>
             </Card>

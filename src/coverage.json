@@ -1,62 +1,129 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T09:12:13.228Z",
+  "generatedAt": "2026-02-22T04:58:26.230Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 7,
+    "implemented": 7,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add a 'Publish to Market' section in the Admin Dashboard that allows the admin to configure app market listing settings including price (in USD), app description for the marketplace, and category selection",
+        "summary": "Implement dark, heavy, mythical theme with deep black/charcoal background, blood-red (#FF0000) and ember-orange (#FF4500) accents, and faint cracked stone and dragon-scale textures throughout the application",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/AdminDashboard.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
         ],
         "matchedFiles": [
-          "frontend/src/components/AdminDashboard.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Create an OISY wallet configuration panel in the Admin Dashboard where the admin can input their OISY wallet principal ID and select their preferred payout currency (USDC, Bitcoin, or ICP)",
+        "summary": "Replace existing navigation structure with a left side menu (swipe or hamburger) containing items in this exact order: Chat, Scan, Consultant, Safe Draft, Console, Profile, Upgrade to Pro",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/AdminDashboard.tsx",
-          "frontend/src/lib/validation.ts"
+          "frontend/src/components/SideMenu.tsx",
+          "frontend/src/components/BottomNav.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/ScanScreen.tsx",
+          "frontend/src/components/ConsultantScreen.tsx",
+          "frontend/src/components/SafeDraftScreen.tsx",
+          "frontend/src/components/ConsoleScreen.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/AdminDashboard.tsx",
-          "frontend/src/lib/validation.ts"
+          "frontend/src/components/SideMenu.tsx",
+          "frontend/src/components/BottomNav.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/ScanScreen.tsx",
+          "frontend/src/components/ConsultantScreen.tsx",
+          "frontend/src/components/SafeDraftScreen.tsx",
+          "frontend/src/components/ConsoleScreen.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Display the current app market publishing status in the Admin Dashboard showing whether the app is published, the current price, connected wallet status, and total royalties earned",
+        "summary": "Transform home/chat screen to display large Gargoyle Dragon background with wings spread and glowing eyes, big glowing blood-red text saying 'Ready to Punch?', prominent 'START A GUT PUNCH' button styled like forged metal or burning stone, bottom input field with placeholder 'Type your punch…', and clear scan count display showing 'Scans left: 10/10' for free tier or 'Unlimited' for Pro",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/MarketPublishingStatus.tsx",
-          "frontend/src/components/AdminDashboard.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/ChatInterface.tsx",
+          "frontend/src/components/HeroBanner.tsx",
+          "frontend/src/components/Header.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/MarketPublishingStatus.tsx",
-          "frontend/src/components/AdminDashboard.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/HeroBanner.tsx",
+          "frontend/src/components/Header.tsx"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Add a backend endpoint to store and retrieve app market configuration including price, description, category, wallet principal, and payout currency preference",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "Update scan screen to display 'Scan a Convo or Profile' heading and show 'Scan Limit Reached – Upgrade to Pro for Unlimited' message after 10 scans are used on free tier",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ScanScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ScanScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Create therapist/Pro mode interface with calmer dragon aesthetic, focused design, and tools including session notes, resolution guidance, and session management features",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/TherapistModeScreen.tsx",
+          "frontend/src/hooks/useTherapistSessions.ts",
+          "frontend/src/App.tsx",
+          "frontend/src/components/SideMenu.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/SideMenu.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Update all user-facing text and messaging to use raw, direct language including phrases 'Punch through the bullshit', 'The Dragon guards your truth', 'No filters. No games', and eliminate all corporate or overly polished language",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ChatInterface.tsx",
+          "frontend/src/components/ProfileView.tsx",
+          "frontend/src/components/ProAccessUpgrade.tsx",
+          "frontend/src/components/ErrorBoundary.tsx",
+          "frontend/src/components/ScanScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProfileView.tsx",
+          "frontend/src/components/ProAccessUpgrade.tsx",
+          "frontend/src/components/ScanScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Update branding throughout application from 'GUT-PUNCH' to 'ForeverRaw – Home of the Gargoyle Dragon', ensuring the Gargoyle Dragon is the central visual element on all screens",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/TopNavBar.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html",
+          "frontend/src/components/DiscoverView.tsx",
+          "frontend/src/components/ProfileView.tsx",
+          "frontend/src/components/SocialFeed.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/TopNavBar.tsx",
+          "frontend/src/components/Footer.tsx",
+          "frontend/index.html",
+          "frontend/src/components/ProfileView.tsx",
+          "frontend/src/components/SocialFeed.tsx"
+        ]
       }
     ]
   },
@@ -66,14 +133,35 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/index.html",
+    "frontend/public/assets/generated/button-texture.dim_400x120.png",
+    "frontend/public/assets/generated/dragon-scale-texture.dim_512x512.png",
+    "frontend/public/assets/generated/gargoyle-dragon-hero.dim_1920x1080.png",
+    "frontend/public/assets/generated/gargoyle-dragon-logo.dim_256x256.png",
+    "frontend/public/assets/generated/stone-texture.dim_512x512.png",
+    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/AdminDashboard.tsx",
-    "frontend/src/components/MarketPublishingStatus.tsx",
+    "frontend/src/components/BottomNav.tsx",
+    "frontend/src/components/ConsoleScreen.tsx",
+    "frontend/src/components/ConsultantScreen.tsx",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/HeroBanner.tsx",
+    "frontend/src/components/ProAccessUpgrade.tsx",
+    "frontend/src/components/ProfileView.tsx",
+    "frontend/src/components/SafeDraftScreen.tsx",
+    "frontend/src/components/ScanScreen.tsx",
+    "frontend/src/components/SettingsPanel.tsx",
+    "frontend/src/components/SideMenu.tsx",
+    "frontend/src/components/SocialFeed.tsx",
+    "frontend/src/components/TopNavBar.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/usePunches.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/lib/validation.ts",
+    "frontend/src/index.css",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
