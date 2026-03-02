@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ForeverRaw Dark Mythical Theme */
+    --background: oklch(0.06 0.005 270);
+    --foreground: oklch(0.82 0.01 60);
+
+    --card: oklch(0.09 0.005 270);
+    --card-foreground: oklch(0.82 0.01 60);
+
+    --popover: oklch(0.09 0.005 270);
+    --popover-foreground: oklch(0.82 0.01 60);
+
+    /* Blood Red Primary */
+    --primary: oklch(0.38 0.18 25);
+    --primary-foreground: oklch(0.95 0.01 60);
+
+    /* Ember Orange Secondary */
+    --secondary: oklch(0.55 0.18 45);
+    --secondary-foreground: oklch(0.06 0.005 270);
+
+    /* Stone Muted */
+    --muted: oklch(0.18 0.005 270);
+    --muted-foreground: oklch(0.55 0.01 60);
+
+    /* Ember Accent */
+    --accent: oklch(0.55 0.18 45);
+    --accent-foreground: oklch(0.06 0.005 270);
+
+    --destructive: oklch(0.38 0.18 25);
+    --destructive-foreground: oklch(0.95 0.01 60);
+
+    --border: oklch(0.22 0.01 270);
+    --input: oklch(0.14 0.005 270);
+    --ring: oklch(0.38 0.18 25);
+
+    --radius: 0.125rem;
+
+    /* Custom tokens */
+    --blood-red: oklch(0.38 0.18 25);
+    --ember-orange: oklch(0.62 0.18 45);
+    --void: oklch(0.06 0.005 270);
+    --stone: oklch(0.45 0.01 60);
+  }
+
+  .dark {
+    --background: oklch(0.06 0.005 270);
+    --foreground: oklch(0.82 0.01 60);
+    --card: oklch(0.09 0.005 270);
+    --card-foreground: oklch(0.82 0.01 60);
+    --popover: oklch(0.09 0.005 270);
+    --popover-foreground: oklch(0.82 0.01 60);
+    --primary: oklch(0.38 0.18 25);
+    --primary-foreground: oklch(0.95 0.01 60);
+    --secondary: oklch(0.55 0.18 45);
+    --secondary-foreground: oklch(0.06 0.005 270);
+    --muted: oklch(0.18 0.005 270);
+    --muted-foreground: oklch(0.55 0.01 60);
+    --accent: oklch(0.55 0.18 45);
+    --accent-foreground: oklch(0.06 0.005 270);
+    --destructive: oklch(0.38 0.18 25);
+    --destructive-foreground: oklch(0.95 0.01 60);
+    --border: oklch(0.22 0.01 270);
+    --input: oklch(0.14 0.005 270);
+    --ring: oklch(0.38 0.18 25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply dark;
+  }
+
+  body {
+    @apply bg-void text-foreground;
+    font-family: 'Inter', 'JetBrains Mono', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* Prevent text selection on media */
+  img, video {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+@layer utilities {
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
+  .font-bebas {
+    font-family: 'Bebas Neue', sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .bg-void {
+    background-color: oklch(0.06 0.005 270);
+  }
+
+  .bg-void-800 {
+    background-color: oklch(0.10 0.005 270);
+  }
+
+  .text-blood-red {
+    color: oklch(0.50 0.20 25);
+  }
+
+  .bg-blood-red {
+    background-color: oklch(0.38 0.18 25);
+  }
+
+  .border-blood-red {
+    border-color: oklch(0.38 0.18 25);
+  }
+
+  .text-ember-orange {
+    color: oklch(0.65 0.18 45);
+  }
+
+  .bg-ember-orange {
+    background-color: oklch(0.62 0.18 45);
+  }
+
+  .border-ember-orange {
+    border-color: oklch(0.62 0.18 45);
+  }
+
+  .shadow-blood {
+    box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
+  }
+
+  .shadow-ember {
+    box-shadow: 0 0 15px rgba(200, 80, 0, 0.3);
+  }
+
+  .dragon-bg {
+    background-image: url('/assets/generated/dragon-scale-texture.dim_512x512.png');
+    background-size: 256px 256px;
+  }
+
+  .stone-texture {
+    background-image: url('/assets/generated/stone-texture.dim_512x512.png');
+    background-size: 256px 256px;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.08 0.005 270);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.25 0.01 270);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.38 0.18 25);
+}
+
+/* Selection */
+::selection {
+  background: oklch(0.38 0.18 25 / 0.4);
+  color: oklch(0.95 0.01 60);
+}
+
+/* Prevent media context menu globally */
+img, video {
+  pointer-events: auto;
+  -webkit-touch-callout: none;
+}

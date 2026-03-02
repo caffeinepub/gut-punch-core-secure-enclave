@@ -1,0 +1,183 @@
+{
+  "kind": "build_request",
+  "title": "ForeverRaw Gargoyle Dragon Emojis + Internet Identity Ban System",
+  "projectName": "Gut Punch ForeverRaw",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Generate 15 custom ForeverRaw Gargoyle Dragon emoji PNG images (transparent background, 128x128px each) in a dark, cracked-stone / ember / dragon-scale style and serve them as static assets from frontend/public/assets/generated/. The 15 emojis are: dragon-eye (glowing red eye), ember (flame with scale texture), chain-link (rusted chain), skull (cracked with cross in eye socket), raw-heart (black heart with red cracks), lightning-strike (dragon claw holding lightning), stone (cracked black stone with ember glow), blade (dragon fang dagger), void (black circle with dragon silhouette), dragon-shield (gargoyle wing shield), raw-rage (dragon snout breathing fire), burning-heart (heart on fire with chains), prayer (dragon claw holding cross), watching (pair of glowing dragon eyes), steel (dragon claw fist). Each image must have a dark, textured, cinematic, ForeverRaw energy aesthetic.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Generate high-quality transparent PNG emojis in heavy cracked-stone / ember / dragon-scale style",
+          "Make them dark, textured, cinematic, ForeverRaw energy."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All 15 PNG files exist in frontend/public/assets/generated/ with transparent backgrounds",
+        "Each emoji is 128x128px",
+        "Visual style is dark, cracked-stone/ember/dragon-scale with cinematic quality",
+        "Files are named consistently (e.g. emoji-dragon-eye.png, emoji-ember.png, etc.)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add a custom emoji picker to the ChatScreen component that displays all 15 ForeverRaw Gargoyle Dragon emojis (loaded from the generated PNG assets). Users can open the picker via a button in the chat input bar, select an emoji, and it inserts a reference to that emoji into the message. Messages containing emoji references must render the emoji images inline within the chat message list.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add them to the emoji picker in chat."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Emoji picker button appears in the chat input area",
+        "Picker opens a popover/overlay showing all 15 emoji images with names",
+        "Clicking an emoji inserts it into the message input",
+        "Sent messages render the emoji as inline 24x24px images within the message bubble",
+        "Picker has dark dragon-themed styling consistent with existing UI"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Extend the backend Motoko actor to store permanent ban records keyed by Internet Identity principal. Add the following: a `bannedPrincipals` stable map storing principal → ban reason and timestamp; a `banUser(principal, reason)` function callable by admins or the media-theft detection system; an `isBanned(principal)` query that returns ban status; logic ensuring that any principal in `bannedPrincipals` is permanently banned regardless of whether they create a new account — the ban is tied to the identity, not the account. Existing ban enforcement in the actor must use this same map.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Ban status is permanently tied to the identity (new account with same identity = still banned)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "bannedPrincipals stable map persists across upgrades",
+        "banUser() stores the principal with reason and timestamp",
+        "isBanned() returns true for any banned principal",
+        "A principal banned under one account remains banned if they authenticate again with the same identity",
+        "Admin can call banUser() to ban any principal"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement Internet Identity authentication gating for photo and video uploads in ChatScreen. Before a user can upload any media (photo or video), they must be authenticated via Internet Identity. If not authenticated, show a modal/prompt explaining: 'We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe.' with a Login with Internet Identity button. Authenticated users proceed to upload normally. The light verification check must call `isBanned()` on the backend for the current principal and block banned users from uploading.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Light verification (email or phone number) required for photo/video upload",
+          "We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Attempting to upload media without Internet Identity login triggers the verification prompt modal",
+        "Modal shows the exact privacy message: 'We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe.'",
+        "Login with Internet Identity button in the modal initiates the II auth flow",
+        "After successful login, the upload proceeds",
+        "Banned principals see a ban message and cannot upload",
+        "Unauthenticated users cannot bypass the gate"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Implement an optional deeper verification tier in the profile/settings area. Authenticated users can submit a selfie or government ID image for higher trust verification. On submission, the backend stores a `verificationRequest` record (principal, timestamp, status: pending/approved/rejected). Display a 'Higher Trust' badge on verified users' chat messages. Show a clear UI explanation of what deeper verification unlocks.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Optional deeper verification (selfie/ID) for higher trust"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A 'Verify Identity' option appears in the Profile or Settings screen for authenticated users",
+        "User can upload a selfie or ID image to request higher trust verification",
+        "Backend stores the verification request tied to the principal",
+        "Verified users display a 'Trusted Dragon' or equivalent badge in chat",
+        "Unverified users see a prompt explaining the benefits"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Enhance the existing MediaProtection component so that when a screenshot/download/copy attempt is detected, it immediately calls the backend `banUser()` function with the current authenticated principal and reason 'media_theft', then shows the message: 'The Dragon caught you stealing. Account permanently removed.' overlaid on the screen before redirecting to the BanScreen. For unauthenticated users attempting theft, show the same message and block further interaction. This ban must be permanent and tied to the Internet Identity principal.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "When someone tries to steal/screenshot/download: instant permanent ban tied to identity + message 'The Dragon caught you stealing. Account permanently removed.'"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Right-click, drag, Ctrl+S, Ctrl+C, PrintScreen on protected media calls banUser() on the backend with the authenticated principal",
+        "The exact message 'The Dragon caught you stealing. Account permanently removed.' is displayed immediately upon detection",
+        "After the message, the user is redirected to the BanScreen",
+        "The ban is recorded in bannedPrincipals on the backend permanently",
+        "On any subsequent login with the same Internet Identity, the ban screen is shown immediately (BanGate in App.tsx checks isBanned())"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Update the BanGate component in App.tsx to check the backend `isBanned()` function for the currently authenticated Internet Identity principal on every app load. If the principal is banned, show the BanScreen immediately and block all navigation. This ensures the permanent identity-tied ban is enforced across sessions and new accounts using the same identity.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Ban status is permanently tied to the identity (new account with same identity = still banned)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "BanGate calls isBanned() with the current principal on app initialization",
+        "If isBanned() returns true, BanScreen is displayed and no other routes are accessible",
+        "The check runs for every authenticated session",
+        "Unauthenticated users are not blocked (ban only applies to identified principals)"
+      ]
+    }
+  ],
+  "constraints": [
+    "Preserve all existing Gargoyle Dragon branding, dark heavy aesthetic, side menu layout, and chat as main screen",
+    "Do not alter frontend/src/hooks/useInternetIdentity.ts or other immutable paths",
+    "All ban records must use Internet Identity principals as keys — never email or device identifiers",
+    "MediaProtection component enhancements must not break existing watermark overlay logic",
+    "All existing features (Scan, Consultant, Safe Draft, Console, Profile, Upgrade) must remain fully functional"
+  ],
+  "nonGoals": [
+    "Email or phone number collection — verification is Internet Identity only",
+    "Real selfie/ID review pipeline — deeper verification stores the request; admin approval UI is out of scope for this build",
+    "Animated or video emojis — static PNG only",
+    "Emoji reactions on messages — only emoji insertion in new messages",
+    "External ban appeal or unban workflow"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Dragon eye with glowing red iris on transparent background, cracked stone texture, dark cinematic style (emoji-dragon-eye.dim_128x128.png)",
+      "Ember flame with dragon scale texture, orange-red glow, dark background, cracked stone style (emoji-ember.dim_128x128.png)",
+      "Rusted chain link, heavy metal texture, dark and weathered, ember glow highlights (emoji-chain-link.dim_128x128.png)",
+      "Cracked skull with a cross etched in the eye socket, dark stone texture, ember highlights (emoji-skull.dim_128x128.png)",
+      "Black heart with deep red crack lines radiating from center, dark stone texture (emoji-raw-heart.dim_128x128.png)",
+      "Dragon claw gripping a crackling lightning bolt, dark stone scales, electric glow (emoji-lightning-strike.dim_128x128.png)",
+      "Cracked black stone with ember glow seeping through the cracks, dark cinematic (emoji-stone.dim_128x128.png)",
+      "Dragon fang curved dagger blade, bone and obsidian texture, dark and sharp (emoji-blade.dim_128x128.png)",
+      "Solid black circle with a dragon silhouette etched into it, void darkness, minimal ember outline (emoji-void.dim_128x128.png)",
+      "Gargoyle wing spread as a shield shape, dark stone texture, cracked surface, ember veins (emoji-dragon-shield.dim_128x128.png)",
+      "Dragon snout breathing a stream of fire, heavy stone scales, cinematic ember glow (emoji-raw-rage.dim_128x128.png)",
+      "Heart engulfed in flames wrapped with heavy chains, dark cracked stone texture (emoji-burning-heart.dim_128x128.png)",
+      "Dragon claw hand gripping a cross, stone-scaled skin, dark heavy texture, ember highlights (emoji-prayer.dim_128x128.png)",
+      "Pair of glowing dragon eyes staring forward in darkness, red-ember iris glow, dark background (emoji-watching.dim_128x128.png)",
+      "Dragon claw closed fist in steel and stone texture, heavy cracked knuckles, ember glow outlines (emoji-steel.dim_128x128.png)"
+    ],
+    "edits": []
+  }
+}

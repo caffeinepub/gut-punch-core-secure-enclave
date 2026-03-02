@@ -1,0 +1,159 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "ForeverRaw Gargoyle Dragon Emojis + Internet Identity Ban System",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Generate and serve 15 custom ForeverRaw Gargoyle Dragon emoji PNG assets with dark cracked-stone/ember/dragon-scale aesthetic",
+      "acceptanceCriteria": [
+        "All 15 PNG files exist in frontend/public/assets/generated/ with transparent backgrounds",
+        "Each emoji is 128x128px",
+        "Visual style is dark, cracked-stone/ember/dragon-scale with cinematic quality",
+        "Files are named consistently (e.g. emoji-dragon-eye.png, emoji-ember.png, etc.)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/lib/emojis.ts",
+          "operation": "create",
+          "description": "Create emoji registry module that exports an array of emoji metadata objects, each containing: id (kebab-case), name (display name), filename (matching the generated PNG path at frontend/public/assets/generated/emoji-{name}.dim_128x128.png), and category. This module provides the single source of truth for all 15 ForeverRaw Gargoyle Dragon emojis: dragon-eye, ember, chain-link, skull, raw-heart, lightning-strike, stone, blade, void, dragon-shield, raw-rage, burning-heart, prayer, watching, steel."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Add custom emoji picker to ChatScreen that displays all 15 ForeverRaw emojis and supports insertion into messages with inline rendering",
+      "acceptanceCriteria": [
+        "Emoji picker button appears in the chat input area",
+        "Picker opens a popover/overlay showing all 15 emoji images with names",
+        "Clicking an emoji inserts it into the message input",
+        "Sent messages render the emoji as inline 24x24px images within the message bubble",
+        "Picker has dark dragon-themed styling consistent with existing UI"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/EmojiPicker.tsx",
+          "operation": "create",
+          "description": "Create EmojiPicker component that imports the emoji registry from frontend/src/lib/emojis.ts and displays all 15 emojis in a grid popover. Each emoji button shows the PNG image from frontend/public/assets/generated/ at 32x32px with the emoji name as tooltip. Clicking an emoji calls an onSelect callback with the emoji id. Style the picker with dark dragon-themed background (bg-void/95), ember-orange accents, and stone texture borders matching the existing ForeverRaw aesthetic. Use a popover/dialog pattern with close button."
+        },
+        {
+          "path": "frontend/src/components/ChatScreen.tsx",
+          "operation": "modify",
+          "description": "Add emoji picker button next to the send button in the chat input bar. Import and render the EmojiPicker component with a popover trigger. When an emoji is selected, insert the emoji reference syntax (e.g., :dragon-eye:) into the message input at the current cursor position. The emoji picker button should use a dragon-themed icon and match the existing input styling."
+        },
+        {
+          "path": "frontend/src/components/MessageBubble.tsx",
+          "operation": "create",
+          "description": "Create MessageBubble component that renders individual chat messages. Parse message text for emoji reference syntax (:emoji-id:) and replace each match with an inline <img> tag loading the corresponding PNG from frontend/public/assets/generated/emoji-{id}.dim_128x128.png, sized at 24x24px with inline-block display and vertical-align: middle. Use the emoji registry from frontend/src/lib/emojis.ts to resolve emoji IDs to filenames. Apply ForeverRaw dark styling to the message bubble with stone texture background and ember accents."
+        },
+        {
+          "path": "frontend/src/components/ChatScreen.tsx",
+          "operation": "modify",
+          "description": "Replace the existing message rendering logic to use the new MessageBubble component for each message in the conversation history. Pass the message content and metadata as props to MessageBubble. Ensure the scrollable message list container maintains its existing layout and styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement Internet Identity authentication gate for media uploads in ChatScreen with ban check enforcement",
+      "acceptanceCriteria": [
+        "Attempting to upload media without Internet Identity login triggers the verification prompt modal",
+        "Modal shows the exact privacy message: 'We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe.'",
+        "Login with Internet Identity button in the modal initiates the II auth flow",
+        "After successful login, the upload proceeds",
+        "Banned principals see a ban message and cannot upload",
+        "Unauthenticated users cannot bypass the gate"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/MediaUploadGate.tsx",
+          "operation": "create",
+          "description": "Create MediaUploadGate component that wraps the file input/upload trigger in ChatScreen. Check if the user is authenticated via the useInternetIdentity hook. If not authenticated, show a modal dialog with the exact message: 'We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe.' Include a 'Login with Internet Identity' button that calls the login() function from useInternetIdentity. Style the modal with dark dragon-themed aesthetics (void background, ember accents, stone borders). If authenticated, check ban status using the backend isBanned() query via useActor before allowing upload. Display a ban message if banned."
+        },
+        {
+          "path": "frontend/src/components/ChatScreen.tsx",
+          "operation": "modify",
+          "description": "Wrap the existing file selection button (photo/video upload trigger) with the MediaUploadGate component. The gate should intercept the upload action before opening the file picker. Only allow the native file input to activate if the user passes authentication and ban checks. Maintain existing file handling logic (base64 encoding, sendMessage call) but gate it behind MediaUploadGate."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a new React Query hook useIsBanned() that calls the backend isBanned() query method for the currently authenticated principal. Return the ban status boolean with loading and error states. Use this hook in MediaUploadGate to check ban status before allowing uploads."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Implement optional deeper verification UI in profile settings with selfie/ID upload and trust badge display",
+      "acceptanceCriteria": [
+        "A 'Verify Identity' option appears in the Profile or Settings screen for authenticated users",
+        "User can upload a selfie or ID image to request higher trust verification",
+        "Backend stores the verification request tied to the principal",
+        "Verified users display a 'Trusted Dragon' or equivalent badge in chat",
+        "Unverified users see a prompt explaining the benefits"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/IdentityVerification.tsx",
+          "operation": "create",
+          "description": "Create IdentityVerification component for the profile/settings area. Display verification status (pending, approved, rejected, or none). Show an upload form for authenticated users to submit a selfie or government ID image using a file input. On submit, use the blob-storage ExternalBlob class to upload the image and call a backend submitVerificationRequest() method (note: backend implementation is out of scope for this frontend plan). Display a clear explanation of what deeper verification unlocks (e.g., 'Trusted Dragon' badge, priority support, enhanced features). Style with ForeverRaw dark dragon aesthetics."
+        },
+        {
+          "path": "frontend/src/components/ProfileView.tsx",
+          "operation": "modify",
+          "description": "Add a new section to ProfileView that renders the IdentityVerification component. Place it below the email field and above the logout button. Only show this section if the user is authenticated via Internet Identity."
+        },
+        {
+          "path": "frontend/src/components/MessageBubble.tsx",
+          "operation": "modify",
+          "description": "Add logic to display a 'Trusted Dragon' badge icon/label next to the sender's name in each message bubble if the sender has verified status. Fetch verification status from a backend query or user profile metadata. The badge should be a small ember-orange dragon claw icon or text label styled with ForeverRaw aesthetics, positioned inline with the sender name."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Enhance MediaProtection component to call backend banUser on theft detection and display permanent ban message before redirecting to BanScreen",
+      "acceptanceCriteria": [
+        "Right-click, drag, Ctrl+S, Ctrl+C, PrintScreen on protected media calls banUser() on the backend with the authenticated principal",
+        "The exact message 'The Dragon caught you stealing. Account permanently removed.' is displayed immediately upon detection",
+        "After the message, the user is redirected to the BanScreen",
+        "The ban is recorded in bannedPrincipals on the backend permanently",
+        "On any subsequent login with the same Internet Identity, the ban screen is shown immediately (BanGate in App.tsx checks isBanned())"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/MediaProtection.tsx",
+          "operation": "modify",
+          "description": "Enhance the existing MediaProtection component to call the backend banUserForMediaTheft() method (via useActor) immediately when a screenshot/download/copy attempt is detected. Use the current authenticated principal from useInternetIdentity. After the backend call completes, display a full-screen overlay with the exact message: 'The Dragon caught you stealing. Account permanently removed.' styled with ForeverRaw dark aesthetics (blood-red text, void background, dragon imagery). After a 3-second delay, programmatically navigate to the /ban route using TanStack Router's navigate function. For unauthenticated users, show the same message overlay and block further interaction without calling the backend. Preserve existing watermark overlay logic."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a useBanUserForMediaTheft() mutation hook that wraps the backend banUserForMediaTheft() method. This hook should handle the mutation lifecycle (loading, success, error) and be called from MediaProtection when theft is detected. The mutation should not require parameters since it bans the current authenticated caller."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Update BanGate component to check backend isBanned() on every app load and enforce identity-tied permanent bans",
+      "acceptanceCriteria": [
+        "BanGate calls isBanned() with the current principal on app initialization",
+        "If isBanned() returns true, BanScreen is displayed and no other routes are accessible",
+        "The check runs for every authenticated session",
+        "Unauthenticated users are not blocked (ban only applies to identified principals)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update the BanGate component logic in App.tsx to call the backend isBanned() query method using the useActor hook whenever the authenticated principal changes. Use the useIsBanned() hook from useQueries.ts to check ban status. If isBanned() returns true, render the BanScreen component immediately and prevent rendering of the router outlet and all other routes. Only perform the ban check if the user is authenticated (identity is not null). Unauthenticated users should bypass the ban gate and access the app normally. Ensure the ban check runs on every app initialization and identity change."
+        },
+        {
+          "path": "frontend/src/components/BanScreen.tsx",
+          "operation": "modify",
+          "description": "Enhance the BanScreen component to accept an optional ban reason prop and display it alongside the existing zero-tolerance message. Fetch the full ban record from the backend using getBanStatus() to show the timestamp and reason for the ban. Style the ban details with ember-orange text on a void background, maintaining the existing full-screen dragon/gargoyle themed layout. Add a note that the ban is permanent and tied to the Internet Identity, so creating a new account with the same identity will not bypass it."
+        }
+      ]
+    }
+  ]
+}

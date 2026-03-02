@@ -1,0 +1,144 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-generate-15-custom-foreverraw-gargoyle-dragon-emoji-png-images-transparent-background-128x128px-each-in-a-dark-cracked-stone-ember-dragon-scale-style-and-serve-them-as-static-assets-from-frontend-public-assets-generated-the-15-emojis-are-dragon-eye-glowing-red-eye-ember-flame-with-scale-texture-chain-link-rusted-chain-skull-cracked-with-cross-in-eye-socket-raw-heart-black-heart-with-red-cracks-lightning-strike-dragon-claw-holding-lightning-stone-cracked-black-stone-with-ember-glow-blade-dragon-fang-dagger-void-black-circle-with-dragon-silhouette-dragon-shield-gargoyle-wing-shield-raw-rage-dragon-snout-breathing-fire-burning-heart-heart-on-fire-with-chains-prayer-dragon-claw-holding-cross-watching-pair-of-glowing-dragon-eyes-steel-dragon-claw-fist-each-image-must-have-a-dark-textured-cinematic-foreverraw-energy-aesthetic",
+      "featureTitle": "Generate 15 custom ForeverRaw Gargoyle Dragon emoji PNG images (transparent background, 128x128px each) in a dark, cracked-stone / ember / dragon-scale style and serve them as static assets from frontend/public/assets/generated/. The 15 emojis are: dragon-eye (glowing red eye), ember (flame with scale texture), chain-link (rusted chain), skull (cracked with cross in eye socket), raw-heart (black heart with red cracks), lightning-strike (dragon claw holding lightning), stone (cracked black stone with ember glow), blade (dragon fang dagger), void (black circle with dragon silhouette), dragon-shield (gargoyle wing shield), raw-rage (dragon snout breathing fire), burning-heart (heart on fire with chains), prayer (dragon claw holding cross), watching (pair of glowing dragon eyes), steel (dragon claw fist). Each image must have a dark, textured, cinematic, ForeverRaw energy aesthetic.",
+      "files": [
+        "frontend/src/lib/emojis.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-custom-emoji-picker-to-the-chatscreen-component-that-displays-all-15-foreverraw-gargoyle-dragon-emojis-loaded-from-the-generated-png-assets-users-can-open-the-picker-via-a-button-in-the-chat-input-bar-select-an-emoji-and-it-inserts-a-reference-to-that-emoji-into-the-message-messages-containing-emoji-references-must-render-the-emoji-images-inline-within-the-chat-message-list",
+      "featureTitle": "Add a custom emoji picker to the ChatScreen component that displays all 15 ForeverRaw Gargoyle Dragon emojis (loaded from the generated PNG assets). Users can open the picker via a button in the chat input bar, select an emoji, and it inserts a reference to that emoji into the message. Messages containing emoji references must render the emoji images inline within the chat message list.",
+      "files": [
+        "frontend/src/components/ChatScreen.tsx",
+        "frontend/src/components/EmojiPicker.tsx",
+        "frontend/src/components/MessageBubble.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-internet-identity-authentication-gating-for-photo-and-video-uploads-in-chatscreen-before-a-user-can-upload-any-media-photo-or-video-they-must-be-authenticated-via-internet-identity-if-not-authenticated-show-a-modal-prompt-explaining-we-don-t-sell-your-data-we-just-make-sure-the-dragon-knows-who-s-who-so-real-people-stay-safe-with-a-login-with-internet-identity-button-authenticated-users-proceed-to-upload-normally-the-light-verification-check-must-call-isbanned-on-the-backend-for-the-current-principal-and-block-banned-users-from-uploading",
+      "featureTitle": "Implement Internet Identity authentication gating for photo and video uploads in ChatScreen. Before a user can upload any media (photo or video), they must be authenticated via Internet Identity. If not authenticated, show a modal/prompt explaining: 'We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe.' with a Login with Internet Identity button. Authenticated users proceed to upload normally. The light verification check must call `isBanned()` on the backend for the current principal and block banned users from uploading.",
+      "files": [
+        "frontend/src/components/ChatScreen.tsx",
+        "frontend/src/components/MediaUploadGate.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-an-optional-deeper-verification-tier-in-the-profile-settings-area-authenticated-users-can-submit-a-selfie-or-government-id-image-for-higher-trust-verification-on-submission-the-backend-stores-a-verificationrequest-record-principal-timestamp-status-pending-approved-rejected-display-a-higher-trust-badge-on-verified-users-chat-messages-show-a-clear-ui-explanation-of-what-deeper-verification-unlocks",
+      "featureTitle": "Implement an optional deeper verification tier in the profile/settings area. Authenticated users can submit a selfie or government ID image for higher trust verification. On submission, the backend stores a `verificationRequest` record (principal, timestamp, status: pending/approved/rejected). Display a 'Higher Trust' badge on verified users' chat messages. Show a clear UI explanation of what deeper verification unlocks.",
+      "files": [
+        "frontend/src/components/IdentityVerification.tsx",
+        "frontend/src/components/MessageBubble.tsx",
+        "frontend/src/components/ProfileView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enhance-the-existing-mediaprotection-component-so-that-when-a-screenshot-download-copy-attempt-is-detected-it-immediately-calls-the-backend-banuser-function-with-the-current-authenticated-principal-and-reason-media-theft-then-shows-the-message-the-dragon-caught-you-stealing-account-permanently-removed-overlaid-on-the-screen-before-redirecting-to-the-banscreen-for-unauthenticated-users-attempting-theft-show-the-same-message-and-block-further-interaction-this-ban-must-be-permanent-and-tied-to-the-internet-identity-principal",
+      "featureTitle": "Enhance the existing MediaProtection component so that when a screenshot/download/copy attempt is detected, it immediately calls the backend `banUser()` function with the current authenticated principal and reason 'media_theft', then shows the message: 'The Dragon caught you stealing. Account permanently removed.' overlaid on the screen before redirecting to the BanScreen. For unauthenticated users attempting theft, show the same message and block further interaction. This ban must be permanent and tied to the Internet Identity principal.",
+      "files": [
+        "frontend/src/components/MediaProtection.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-bangate-component-in-app-tsx-to-check-the-backend-isbanned-function-for-the-currently-authenticated-internet-identity-principal-on-every-app-load-if-the-principal-is-banned-show-the-banscreen-immediately-and-block-all-navigation-this-ensures-the-permanent-identity-tied-ban-is-enforced-across-sessions-and-new-accounts-using-the-same-identity",
+      "featureTitle": "Update the BanGate component in App.tsx to check the backend `isBanned()` function for the currently authenticated Internet Identity principal on every app load. If the principal is banned, show the BanScreen immediately and block all navigation. This ensures the permanent identity-tied ban is enforced across sessions and new accounts using the same identity.",
+      "files": [
+        "frontend/src/components/BanScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "stripe@3.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

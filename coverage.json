@@ -1,0 +1,149 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-26T20:14:58.652Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 7,
+    "implemented": 6,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Generate 15 custom ForeverRaw Gargoyle Dragon emoji PNG images (transparent background, 128x128px each) in a dark, cracked-stone / ember / dragon-scale style and serve them as static assets from frontend/public/assets/generated/. The 15 emojis are: dragon-eye (glowing red eye), ember (flame with scale texture), chain-link (rusted chain), skull (cracked with cross in eye socket), raw-heart (black heart with red cracks), lightning-strike (dragon claw holding lightning), stone (cracked black stone with ember glow), blade (dragon fang dagger), void (black circle with dragon silhouette), dragon-shield (gargoyle wing shield), raw-rage (dragon snout breathing fire), burning-heart (heart on fire with chains), prayer (dragon claw holding cross), watching (pair of glowing dragon eyes), steel (dragon claw fist). Each image must have a dark, textured, cinematic, ForeverRaw energy aesthetic.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/lib/emojis.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/lib/emojis.ts"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add a custom emoji picker to the ChatScreen component that displays all 15 ForeverRaw Gargoyle Dragon emojis (loaded from the generated PNG assets). Users can open the picker via a button in the chat input bar, select an emoji, and it inserts a reference to that emoji into the message. Messages containing emoji references must render the emoji images inline within the chat message list.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/EmojiPicker.tsx",
+          "frontend/src/components/ChatScreen.tsx",
+          "frontend/src/components/MessageBubble.tsx",
+          "frontend/src/components/ChatScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/EmojiPicker.tsx",
+          "frontend/src/components/ChatScreen.tsx",
+          "frontend/src/components/MessageBubble.tsx",
+          "frontend/src/components/ChatScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Extend the backend Motoko actor to store permanent ban records keyed by Internet Identity principal. Add the following: a `bannedPrincipals` stable map storing principal → ban reason and timestamp; a `banUser(principal, reason)` function callable by admins or the media-theft detection system; an `isBanned(principal)` query that returns ban status; logic ensuring that any principal in `bannedPrincipals` is permanently banned regardless of whether they create a new account — the ban is tied to the identity, not the account. Existing ban enforcement in the actor must use this same map.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Implement Internet Identity authentication gating for photo and video uploads in ChatScreen. Before a user can upload any media (photo or video), they must be authenticated via Internet Identity. If not authenticated, show a modal/prompt explaining: 'We don't sell your data. We just make sure the Dragon knows who's who so real people stay safe.' with a Login with Internet Identity button. Authenticated users proceed to upload normally. The light verification check must call `isBanned()` on the backend for the current principal and block banned users from uploading.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/MediaUploadGate.tsx",
+          "frontend/src/components/ChatScreen.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/MediaUploadGate.tsx",
+          "frontend/src/components/ChatScreen.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Implement an optional deeper verification tier in the profile/settings area. Authenticated users can submit a selfie or government ID image for higher trust verification. On submission, the backend stores a `verificationRequest` record (principal, timestamp, status: pending/approved/rejected). Display a 'Higher Trust' badge on verified users' chat messages. Show a clear UI explanation of what deeper verification unlocks.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/IdentityVerification.tsx",
+          "frontend/src/components/ProfileView.tsx",
+          "frontend/src/components/MessageBubble.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/IdentityVerification.tsx",
+          "frontend/src/components/ProfileView.tsx",
+          "frontend/src/components/MessageBubble.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Enhance the existing MediaProtection component so that when a screenshot/download/copy attempt is detected, it immediately calls the backend `banUser()` function with the current authenticated principal and reason 'media_theft', then shows the message: 'The Dragon caught you stealing. Account permanently removed.' overlaid on the screen before redirecting to the BanScreen. For unauthenticated users attempting theft, show the same message and block further interaction. This ban must be permanent and tied to the Internet Identity principal.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/MediaProtection.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/MediaProtection.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Update the BanGate component in App.tsx to check the backend `isBanned()` function for the currently authenticated Internet Identity principal on every app load. If the principal is banned, show the BanScreen immediately and block all navigation. This ensures the permanent identity-tied ban is enforced across sessions and new accounts using the same identity.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/BanScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/BanScreen.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/emoji-blade.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-burning-heart.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-chain-link.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-dragon-eye.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-dragon-shield.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-ember.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-lightning-strike.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-prayer.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-raw-heart.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-raw-rage.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-skull.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-steel.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-stone.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-void.dim_128x128.png",
+    "frontend/public/assets/generated/emoji-watching.dim_128x128.png",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/AdminDashboard.tsx",
+    "frontend/src/components/BanScreen.tsx",
+    "frontend/src/components/ChatScreen.tsx",
+    "frontend/src/components/EmojiPicker.tsx",
+    "frontend/src/components/IdentityVerification.tsx",
+    "frontend/src/components/MediaProtection.tsx",
+    "frontend/src/components/MediaUploadGate.tsx",
+    "frontend/src/components/MessageBubble.tsx",
+    "frontend/src/components/ProfileView.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useChat.ts",
+    "frontend/src/hooks/usePunches.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/lib/emojis.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
