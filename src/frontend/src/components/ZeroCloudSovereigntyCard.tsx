@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Lock, Search, Eye } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, Lock, Search, Shield } from "lucide-react";
 
 export default function ZeroCloudSovereigntyCard() {
   return (
@@ -12,9 +12,14 @@ export default function ZeroCloudSovereigntyCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         <p className="text-foreground leading-relaxed">
-          Unlike traditional platforms that "manage" your data through third-party silos and regulatory middle-men, 
-          <span className="text-primary font-semibold"> GUT-PUNCH</span> operates on a{' '}
-          <span className="text-primary font-semibold">Zero-Trust Security Model</span>.
+          Unlike traditional platforms that "manage" your data through
+          third-party silos and regulatory middle-men,
+          <span className="text-primary font-semibold"> GUT-PUNCH</span>{" "}
+          operates on a{" "}
+          <span className="text-primary font-semibold">
+            Zero-Trust Security Model
+          </span>
+          .
         </p>
 
         <div className="space-y-4">
@@ -30,8 +35,8 @@ export default function ZeroCloudSovereigntyCard() {
                 Local Scrubbing
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                All PII (Personally Identifiable Information) is detected and scrubbed at the device level 
-                before any "Handshake" occurs.
+                All PII (Personally Identifiable Information) is detected and
+                scrubbed at the device level before any "Handshake" occurs.
               </p>
             </div>
           </div>
@@ -48,9 +53,12 @@ export default function ZeroCloudSovereigntyCard() {
                 Resolution over Regulation
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                By classifying this as a <span className="text-primary font-semibold">Security Search Engine</span>, 
-                we provide a "Secure Enclave" for emotional resolution without the vulnerabilities of cloud-based 
-                medical tracking.
+                By classifying this as a{" "}
+                <span className="text-primary font-semibold">
+                  Security Search Engine
+                </span>
+                , we provide a "Secure Enclave" for emotional resolution without
+                the vulnerabilities of cloud-based medical tracking.
               </p>
             </div>
           </div>
@@ -67,8 +75,9 @@ export default function ZeroCloudSovereigntyCard() {
                 The Sentinel Guard
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Our integrated Sentinel layer identifies "fake ass bullshit" and social engineering in real-time, 
-                ensuring your internal "Mandate" stays private and protected.
+                Our integrated Sentinel layer identifies "fake ass bullshit" and
+                social engineering in real-time, ensuring your internal
+                "Mandate" stays private and protected.
               </p>
             </div>
           </div>

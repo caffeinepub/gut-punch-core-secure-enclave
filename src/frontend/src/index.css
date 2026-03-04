@@ -1,115 +1,342 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --radius: 0.25rem;
-        /* ForeverRaw Dark Theme - Deep black/charcoal with blood-red and ember-orange */
-        --background: 0.05 0.01 0;
-        --foreground: 0.95 0.02 0;
-        --card: 0.10 0.02 0;
-        --card-foreground: 0.95 0.02 0;
-        --popover: 0.08 0.02 0;
-        --popover-foreground: 0.95 0.02 0;
-        /* Blood red primary */
-        --primary: 0.55 0.30 15;
-        --primary-foreground: 0.98 0.01 0;
-        --secondary: 0.15 0.02 0;
-        --secondary-foreground: 0.95 0.02 0;
-        --muted: 0.20 0.02 0;
-        --muted-foreground: 0.60 0.02 0;
-        /* Ember orange accent */
-        --accent: 0.65 0.28 30;
-        --accent-foreground: 0.98 0.01 0;
-        --destructive: 0.55 0.30 15;
-        --destructive-foreground: 0.98 0.01 0;
-        --border: 0.18 0.02 0;
-        --input: 0.12 0.02 0;
-        --ring: 0.55 0.30 15;
-        --chart-1: 0.55 0.30 15;
-        --chart-2: 0.65 0.28 30;
-        --chart-3: 0.45 0.20 20;
-        --chart-4: 0.50 0.25 25;
-        --chart-5: 0.40 0.15 10;
-    }
+  :root {
+    /* Gut Punch V37 — Void Metal / Amber / Ancestral Violet */
+    --background: oklch(0.05 0.006 270);
+    --foreground: oklch(0.82 0.01 60);
 
-    .dark {
-        /* ForeverRaw Dark Theme - Deep black/charcoal with blood-red and ember-orange */
-        --background: 0.05 0.01 0;
-        --foreground: 0.95 0.02 0;
-        --card: 0.10 0.02 0;
-        --card-foreground: 0.95 0.02 0;
-        --popover: 0.08 0.02 0;
-        --popover-foreground: 0.95 0.02 0;
-        /* Blood red primary */
-        --primary: 0.55 0.30 15;
-        --primary-foreground: 0.98 0.01 0;
-        --secondary: 0.15 0.02 0;
-        --secondary-foreground: 0.95 0.02 0;
-        --muted: 0.20 0.02 0;
-        --muted-foreground: 0.60 0.02 0;
-        /* Ember orange accent */
-        --accent: 0.65 0.28 30;
-        --accent-foreground: 0.98 0.01 0;
-        --destructive: 0.55 0.30 15;
-        --destructive-foreground: 0.98 0.01 0;
-        --border: 0.18 0.02 0;
-        --input: 0.12 0.02 0;
-        --ring: 0.55 0.30 15;
-        --chart-1: 0.55 0.30 15;
-        --chart-2: 0.65 0.28 30;
-        --chart-3: 0.45 0.20 20;
-        --chart-4: 0.50 0.25 25;
-        --chart-5: 0.40 0.15 10;
-    }
+    --card: oklch(0.08 0.006 270);
+    --card-foreground: oklch(0.82 0.01 60);
 
-    * {
-        @apply border-border;
-    }
-    
-    body {
-        @apply bg-background text-foreground;
-        font-family: 'Cinzel', 'Bebas Neue', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background-image: url('/assets/generated/stone-texture.dim_512x512.png');
-        background-repeat: repeat;
-        background-size: 256px 256px;
-        background-blend-mode: overlay;
-        background-attachment: fixed;
-    }
-    
-    /* Blood-red glow effect */
-    .blood-glow {
-        text-shadow: 0 0 20px oklch(var(--primary) / 0.8), 0 0 40px oklch(var(--primary) / 0.4);
-    }
+    --popover: oklch(0.08 0.006 270);
+    --popover-foreground: oklch(0.82 0.01 60);
 
-    /* Ember glow effect */
-    .ember-glow {
-        text-shadow: 0 0 15px oklch(var(--accent) / 0.8), 0 0 30px oklch(var(--accent) / 0.4);
-    }
+    /* Glowing Amber Primary */
+    --primary: oklch(0.72 0.18 55);
+    --primary-foreground: oklch(0.06 0.005 270);
 
-    /* Dragon scale texture overlay */
-    .dragon-scales {
-        background-image: url('/assets/generated/dragon-scale-texture.dim_512x512.png');
-        background-repeat: repeat;
-        background-size: 128px 128px;
-        background-blend-mode: overlay;
-    }
+    /* Deep Violet Secondary */
+    --secondary: oklch(0.42 0.22 300);
+    --secondary-foreground: oklch(0.95 0.01 60);
 
-    /* Forged metal button texture */
-    .forged-metal {
-        background-image: url('/assets/generated/button-texture.dim_400x120.png');
-        background-size: cover;
-        background-position: center;
-        position: relative;
-    }
+    /* Void Metal Muted */
+    --muted: oklch(0.14 0.006 270);
+    --muted-foreground: oklch(0.5 0.01 60);
 
-    /* Hide scrollbar for horizontal scroll */
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-    }
-    .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
+    /* Amber Accent */
+    --accent: oklch(0.72 0.18 55);
+    --accent-foreground: oklch(0.06 0.005 270);
+
+    --destructive: oklch(0.45 0.2 25);
+    --destructive-foreground: oklch(0.95 0.01 60);
+
+    --border: oklch(0.2 0.008 270);
+    --input: oklch(0.12 0.006 270);
+    --ring: oklch(0.72 0.18 55);
+
+    --radius: 0.125rem;
+
+    /* Custom tokens */
+    --blood-red: oklch(0.45 0.2 25);
+    --ember-orange: oklch(0.65 0.18 45);
+    --amber-glow: oklch(0.72 0.18 55);
+    --deep-violet: oklch(0.42 0.22 300);
+    --void: oklch(0.05 0.006 270);
+    --void-metal: oklch(0.08 0.008 270);
+    --stone: oklch(0.45 0.01 60);
+  }
+
+  .dark {
+    --background: oklch(0.05 0.006 270);
+    --foreground: oklch(0.82 0.01 60);
+    --card: oklch(0.08 0.006 270);
+    --card-foreground: oklch(0.82 0.01 60);
+    --popover: oklch(0.08 0.006 270);
+    --popover-foreground: oklch(0.82 0.01 60);
+    --primary: oklch(0.72 0.18 55);
+    --primary-foreground: oklch(0.06 0.005 270);
+    --secondary: oklch(0.42 0.22 300);
+    --secondary-foreground: oklch(0.95 0.01 60);
+    --muted: oklch(0.14 0.006 270);
+    --muted-foreground: oklch(0.5 0.01 60);
+    --accent: oklch(0.72 0.18 55);
+    --accent-foreground: oklch(0.06 0.005 270);
+    --destructive: oklch(0.45 0.2 25);
+    --destructive-foreground: oklch(0.95 0.01 60);
+    --border: oklch(0.2 0.008 270);
+    --input: oklch(0.12 0.006 270);
+    --ring: oklch(0.72 0.18 55);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply dark;
+  }
+
+  body {
+    background-color: oklch(0.05 0.006 270);
+    background-image: url("/assets/generated/void-metal-texture.dim_512x512.png");
+    background-size: 512px 512px;
+    background-repeat: repeat;
+    color: oklch(0.82 0.01 60);
+    font-family: "JetBrains Mono", "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: "Cinzel", serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* Prevent text selection on media */
+  img,
+  video {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+@layer utilities {
+  .font-cinzel {
+    font-family: "Cinzel", serif;
+  }
+
+  .font-bebas {
+    font-family: "Bebas Neue", sans-serif;
+  }
+
+  .font-mono {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+  }
+
+  .bg-void {
+    background-color: oklch(0.05 0.006 270);
+  }
+
+  .bg-void-800 {
+    background-color: oklch(0.09 0.006 270);
+  }
+
+  .bg-void-metal {
+    background-color: oklch(0.08 0.008 270);
+    background-image: url("/assets/generated/void-metal-texture.dim_512x512.png");
+    background-size: 256px 256px;
+  }
+
+  .text-blood-red {
+    color: oklch(0.5 0.2 25);
+  }
+
+  .bg-blood-red {
+    background-color: oklch(0.45 0.2 25);
+  }
+
+  .border-blood-red {
+    border-color: oklch(0.45 0.2 25);
+  }
+
+  .text-ember-orange {
+    color: oklch(0.65 0.18 45);
+  }
+
+  .bg-ember-orange {
+    background-color: oklch(0.65 0.18 45);
+  }
+
+  .border-ember-orange {
+    border-color: oklch(0.65 0.18 45);
+  }
+
+  /* Glowing Amber — Fire accent */
+  .text-amber-glow {
+    color: oklch(0.72 0.18 55);
+  }
+
+  .bg-amber-glow {
+    background-color: oklch(0.72 0.18 55);
+  }
+
+  .border-amber-glow {
+    border-color: oklch(0.72 0.18 55);
+  }
+
+  /* Deep Violet — Ancestral Purple */
+  .text-deep-violet {
+    color: oklch(0.55 0.22 300);
+  }
+
+  .bg-deep-violet {
+    background-color: oklch(0.42 0.22 300);
+  }
+
+  .border-deep-violet {
+    border-color: oklch(0.42 0.22 300);
+  }
+
+  .shadow-blood {
+    box-shadow: 0 0 15px oklch(0.45 0.2 25 / 0.3);
+  }
+
+  .shadow-ember {
+    box-shadow: 0 0 15px oklch(0.65 0.18 45 / 0.3);
+  }
+
+  .shadow-amber {
+    box-shadow: 0 0 15px oklch(0.72 0.18 55 / 0.4);
+  }
+
+  .shadow-violet {
+    box-shadow: 0 0 15px oklch(0.42 0.22 300 / 0.4);
+  }
+
+  .dragon-bg {
+    background-image: url("/assets/generated/dragon-scale-texture.dim_512x512.png");
+    background-size: 256px 256px;
+  }
+
+  .stone-texture {
+    background-image: url("/assets/generated/stone-texture.dim_512x512.png");
+    background-size: 256px 256px;
+  }
+
+  .void-metal-texture {
+    background-image: url("/assets/generated/void-metal-texture.dim_512x512.png");
+    background-size: 256px 256px;
+  }
+}
+
+/* ── Keyframe Animations ── */
+
+@keyframes hud-flicker {
+  0%,
+  100% {
+    border-color: transparent;
+    box-shadow: none;
+  }
+  25% {
+    border-color: oklch(0.72 0.18 55 / 0.8);
+    box-shadow: 0 0 12px oklch(0.72 0.18 55 / 0.4);
+  }
+  50% {
+    border-color: oklch(0.72 0.18 55 / 0.3);
+    box-shadow: 0 0 4px oklch(0.72 0.18 55 / 0.2);
+  }
+  75% {
+    border-color: oklch(0.72 0.18 55 / 0.9);
+    box-shadow: 0 0 16px oklch(0.72 0.18 55 / 0.5);
+  }
+}
+
+@keyframes amber-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes violet-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px oklch(0.55 0.22 300 / 0.8), 0 0 16px
+      oklch(0.45 0.22 300 / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 16px oklch(0.65 0.22 300 / 1), 0 0 32px
+      oklch(0.55 0.22 300 / 0.6);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes dragon-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes ember-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.9;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.07 0.005 270);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.22 0.01 270);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.72 0.18 55);
+}
+
+/* Selection */
+::selection {
+  background: oklch(0.72 0.18 55 / 0.3);
+  color: oklch(0.95 0.01 60);
+}
+
+/* Prevent media context menu globally */
+img,
+video {
+  pointer-events: auto;
+  -webkit-touch-callout: none;
 }

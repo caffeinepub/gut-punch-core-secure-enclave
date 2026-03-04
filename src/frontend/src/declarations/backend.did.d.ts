@@ -10,47 +10,10 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface ChatMessage {
-  'id' : string,
-  'content' : string,
-  'isRead' : boolean,
-  'receiverId' : Principal,
-  'timestamp' : bigint,
-  'senderId' : Principal,
-}
-export type MarketCategory = { 'utility' : null } |
-  { 'finance' : null } |
-  { 'other' : null } |
-  { 'entertainment' : null } |
-  { 'productivity' : null } |
-  { 'education' : null } |
-  { 'business' : null } |
-  { 'health' : null };
-export interface MarketConfig {
-  'isPublished' : boolean,
-  'description' : string,
-  'payoutCurrency' : PayoutCurrency,
-  'totalRoyaltiesEarned' : bigint,
-  'category' : MarketCategory,
-  'priceUSD' : bigint,
-  'walletPrincipal' : [] | [Principal],
-}
-export type PayoutCurrency = { 'btc' : null } |
-  { 'icp' : null } |
-  { 'usdc' : null };
-export interface Product {
-  'id' : string,
-  'name' : string,
-  'description' : string,
-  'priceId' : string,
-}
-export interface Punch {
-  'id' : string,
-  'content' : string,
-  'views' : bigint,
-  'userId' : Principal,
-  'likes' : bigint,
-  'timestamp' : bigint,
+export interface BanRecord {
+  'permanent' : boolean,
+  'timestamp' : Time,
+  'reason' : string,
 }
 export interface ShoppingItem {
   'productName' : string,
@@ -75,15 +38,6 @@ export interface SubscriptionUpdate {
   'expiresAt' : [] | [bigint],
   'stripeSubscriptionId' : [] | [string],
 }
-export interface TherapistSession {
-  'id' : string,
-  'resolutionTips' : string,
-  'clientId' : Principal,
-  'isActive' : boolean,
-  'therapistId' : Principal,
-  'notes' : string,
-  'timestamp' : bigint,
-}
 export type Time = bigint;
 export interface TransformationInput {
   'context' : Uint8Array,
@@ -94,15 +48,11 @@ export interface TransformationOutput {
   'body' : Uint8Array,
   'headers' : Array<http_header>,
 }
-export interface UsageStats {
-  'uniqueUserEstimate' : bigint,
-  'recentAppOpenEvents' : Array<Time>,
-  'totalAppOpenCount' : bigint,
-}
 export interface UserProfile {
   'name' : string,
   'email' : [] | [string],
   'stripeCustomerId' : [] | [string],
+  'encryptedExtraSomething' : [] | [Uint8Array],
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -145,65 +95,43 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addProduct' : ActorMethod<[Product], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'authenticateUser' : ActorMethod<[string], boolean>,
+  'banUser' : ActorMethod<[Principal, string], undefined>,
+  'banUserForMediaTheft' : ActorMethod<[string], undefined>,
   'createCheckoutSession' : ActorMethod<
     [Array<ShoppingItem>, string, string],
     string
   >,
-  'createPunch' : ActorMethod<[string], string>,
-  'createTherapistSession' : ActorMethod<[Principal, string, string], string>,
-  'deleteProduct' : ActorMethod<[string], undefined>,
-  'deletePunch' : ActorMethod<[string], undefined>,
-  'deleteTherapistSession' : ActorMethod<[string], undefined>,
-  'endTherapistSession' : ActorMethod<[string], undefined>,
-  'getAllPunches' : ActorMethod<[], Array<Punch>>,
+  'getBanStatus' : ActorMethod<[Principal], [] | [BanRecord]>,
   'getCallerSubscription' : ActorMethod<[], [] | [SubscriptionUpdate]>,
   'getCallerUsageStats' : ActorMethod<[], [] | [UserUsageStats]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getConversation' : ActorMethod<[Principal], Array<ChatMessage>>,
-  'getMarketConfig' : ActorMethod<[], MarketConfig>,
-  'getOnlineStatus' : ActorMethod<[Principal], boolean>,
-  'getProducts' : ActorMethod<[], Array<Product>>,
-  'getPunch' : ActorMethod<[string], [] | [Punch]>,
+  'getProducts' : ActorMethod<
+    [],
+    Array<
+      {
+        'id' : string,
+        'name' : string,
+        'description' : string,
+        'priceId' : string,
+      }
+    >
+  >,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
-  'getTherapistSession' : ActorMethod<[string], [] | [TherapistSession]>,
-  'getTherapistSessionByTherapist' : ActorMethod<
-    [Principal],
-    Array<TherapistSession>
-  >,
-  'getTherapistSessionsByClient' : ActorMethod<
-    [Principal],
-    Array<TherapistSession>
-  >,
-  'getTrendingPunches' : ActorMethod<[bigint], Array<Punch>>,
-  'getUnreadMessageCount' : ActorMethod<[], bigint>,
-  'getUsageStats' : ActorMethod<[], UsageStats>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'incrementDailyScans' : ActorMethod<[], undefined>,
-  'incrementPunchViews' : ActorMethod<[string], undefined>,
+  'isBanned' : ActorMethod<[Principal], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
-  'likePunch' : ActorMethod<[string], undefined>,
-  'markMessageAsRead' : ActorMethod<[string], undefined>,
-  'publish' : ActorMethod<[], undefined>,
   'resetFreeTierUsage' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'sendMessage' : ActorMethod<[Principal, string], string>,
-  'setOnlineStatus' : ActorMethod<[boolean], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'trackAppOpen' : ActorMethod<[], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
-  'unlikePunch' : ActorMethod<[string], undefined>,
+  'unbanUser' : ActorMethod<[Principal], undefined>,
   'updateCallerSubscription' : ActorMethod<[SubscriptionUpdate], undefined>,
-  'updateMarketConfig' : ActorMethod<[MarketConfig], undefined>,
-  'updateProduct' : ActorMethod<[Product], undefined>,
-  'updateTherapistSession' : ActorMethod<
-    [string, string, string, boolean],
-    undefined
-  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

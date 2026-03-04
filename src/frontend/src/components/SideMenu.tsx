@@ -1,137 +1,314 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useRouterState } from '@tanstack/react-router';
-import { Menu, X, MessageSquare, ScanLine, Users, FileText, Terminal, User, Crown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useApp } from '../contexts/AppContext';
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  Brain,
+  FileText,
+  Flame,
+  LogIn,
+  LogOut,
+  MessageSquare,
+  RotateCcw,
+  ScanLine,
+  Settings,
+  Terminal,
+  User,
+  X,
+  Zap,
+} from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
-export default function SideMenu() {
-    const [isOpen, setIsOpen] = useState(false);
-    const navigate = useNavigate();
-    const routerState = useRouterState();
-    const currentPath = routerState.location.pathname;
-    const { identity } = useInternetIdentity();
-    const { isPro } = useApp();
-    const isAuthenticated = !!identity;
+interface SideMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setIsOpen(false);
-        };
-        window.addEventListener('keydown', handleEscape);
-        return () => window.removeEventListener('keydown', handleEscape);
-    }, []);
+const menuItems = [
+  {
+    label: "Chat",
+    path: "/chat",
+    icon: MessageSquare,
+    description: "Unlimited Punches",
+  },
+  {
+    label: "Scan",
+    path: "/scan",
+    icon: ScanLine,
+    description: "Threat Detection",
+  },
+  {
+    label: "Consultant",
+    path: "/consultant",
+    icon: Brain,
+    description: "Dragon Wisdom",
+  },
+  {
+    label: "Safe Draft",
+    path: "/safe-draft",
+    icon: FileText,
+    description: "Zero-Cloud Vault",
+  },
+  {
+    label: "Destroy & Rebuild",
+    path: "/destroy-rebuild",
+    icon: RotateCcw,
+    description: "Sovereign Audio Work",
+    highlight: false,
+    ember: true,
+  },
+  {
+    label: "Console",
+    path: "/console",
+    icon: Terminal,
+    description: "System Status",
+  },
+  {
+    label: "Profile",
+    path: "/profile",
+    icon: User,
+    description: "Warrior Identity",
+  },
+  {
+    label: "Admin",
+    path: "/admin",
+    icon: Settings,
+    description: "System Control",
+    admin: true,
+  },
+  {
+    label: "Upgrade to Pro",
+    path: "/upgrade",
+    icon: Zap,
+    description: "Unleash the Dragon",
+    highlight: true,
+  },
+];
 
-    const menuItems = [
-        { id: 'chat', path: '/', icon: MessageSquare, label: 'Chat' },
-        { id: 'scan', path: '/scan', icon: ScanLine, label: 'Scan' },
-        { id: 'consultant', path: '/consultant', icon: Users, label: 'Consultant', proOnly: true },
-        { id: 'safe-draft', path: '/safe-draft', icon: FileText, label: 'Safe Draft' },
-        { id: 'console', path: '/console', icon: Terminal, label: 'Console' },
-        { id: 'profile', path: '/profile', icon: User, label: 'Profile' },
-        { id: 'upgrade', path: '/upgrade', icon: Crown, label: 'Upgrade to Pro', highlight: !isPro },
-    ];
+export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
+  const navigate = useNavigate();
+  const { identity, login, clear, loginStatus } = useInternetIdentity();
+  const queryClient = useQueryClient();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number>(0);
 
-    const handleNavigate = (path: string) => {
-        navigate({ to: path });
-        setIsOpen(false);
+  const isAuthenticated = !!identity;
+
+  // Swipe to close
+  useEffect(() => {
+    const el = menuRef.current;
+    if (!el) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
     };
 
-    return (
-        <>
-            {/* Hamburger Button */}
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(true)}
-                className="fixed top-4 left-4 z-50 h-12 w-12 rounded-none bg-card/80 backdrop-blur border border-primary/30 hover:bg-primary/20 hover:border-primary"
-                aria-label="Open menu"
-            >
-                <Menu className="h-6 w-6 text-primary" />
-            </Button>
+    const handleTouchEnd = (e: TouchEvent) => {
+      const diff = touchStartX.current - e.changedTouches[0].clientX;
+      if (diff > 60) onClose();
+    };
 
-            {/* Backdrop */}
-            {isOpen && (
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchend", handleTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [onClose]);
+
+  useEffect(() => {
+    const handleEdgeSwipe = (e: TouchEvent) => {
+      if (e.touches[0].clientX < 20) {
+        touchStartX.current = e.touches[0].clientX;
+      }
+    };
+    const handleEdgeSwipeEnd = (e: TouchEvent) => {
+      if (touchStartX.current < 20) {
+        const diff = e.changedTouches[0].clientX - touchStartX.current;
+        if (diff > 60 && !isOpen) {
+          // Signal open — handled by parent
+        }
+      }
+    };
+    document.addEventListener("touchstart", handleEdgeSwipe, { passive: true });
+    document.addEventListener("touchend", handleEdgeSwipeEnd, {
+      passive: true,
+    });
+    return () => {
+      document.removeEventListener("touchstart", handleEdgeSwipe);
+      document.removeEventListener("touchend", handleEdgeSwipeEnd);
+    };
+  }, [isOpen]);
+
+  const handleNavigate = (path: string) => {
+    navigate({ to: path });
+    onClose();
+  };
+
+  const handleAuth = async () => {
+    if (isAuthenticated) {
+      await clear();
+      queryClient.clear();
+      onClose();
+    } else {
+      try {
+        await login();
+      } catch (err: any) {
+        if (err?.message === "User is already authenticated") {
+          await clear();
+          setTimeout(() => login(), 300);
+        }
+      }
+    }
+  };
+
+  return (
+    <div
+      ref={menuRef}
+      className={`fixed top-0 left-0 h-full w-72 z-40 transform transition-transform duration-300 ease-in-out ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+      style={{
+        background:
+          "linear-gradient(180deg, #0a0a0a 0%, #111111 50%, #0d0d0d 100%)",
+        borderRight: "1px solid rgba(139, 0, 0, 0.4)",
+        boxShadow: isOpen ? "4px 0 30px rgba(139, 0, 0, 0.3)" : "none",
+      }}
+    >
+      {/* Dragon scale texture overlay */}
+      <div
+        className="absolute inset-0 opacity-5 pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(/assets/generated/dragon-scale-texture.dim_512x512.png)",
+          backgroundSize: "256px 256px",
+        }}
+      />
+
+      {/* Header */}
+      <div className="relative p-6 border-b border-stone-800">
+        <div className="flex items-center justify-between mb-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-stone-500 hover:text-blood-red transition-colors p-1"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Dragon emblem */}
+        <div className="flex flex-col items-center">
+          <img
+            src="/assets/generated/gargoyle-dragon-emblem.dim_256x256.png"
+            alt="Gargoyle Dragon"
+            className="w-20 h-20 object-contain opacity-90 mb-3"
+            draggable={false}
+          />
+          <div className="text-center">
+            <h2 className="font-cinzel text-blood-red text-lg font-bold tracking-widest">
+              FOREVERRAW
+            </h2>
+            <p className="text-stone-500 text-xs tracking-wider font-mono mt-1">
+              HOME OF THE GARGOYLE DRAGON
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav Items */}
+      <nav className="relative flex-1 py-4 overflow-y-auto">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isEmber = (item as any).ember;
+          const isAdmin = (item as any).admin;
+          const ocid = isAdmin
+            ? "sidemenu.admin.link"
+            : `sidemenu.${item.label.toLowerCase().replace(/[\s&]+/g, "_")}.link`;
+          return (
+            <button
+              type="button"
+              key={item.path}
+              onClick={() => handleNavigate(item.path)}
+              data-ocid={ocid}
+              className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-all duration-200 group border-b border-stone-900 ${
+                item.highlight
+                  ? "hover:bg-blood-red/10 hover:border-blood-red/30"
+                  : isEmber
+                    ? "hover:bg-ember-orange/10 hover:border-ember-orange/30"
+                    : "hover:bg-stone-900/60 hover:border-blood-red/30"
+              }`}
+            >
+              <div
+                className={`p-2 rounded-sm ${
+                  item.highlight
+                    ? "bg-blood-red/20 text-blood-red group-hover:bg-blood-red/30"
+                    : isEmber
+                      ? "bg-ember-orange/20 text-ember-orange group-hover:bg-ember-orange/30"
+                      : "bg-stone-800 text-stone-400 group-hover:text-blood-red group-hover:bg-stone-700"
+                } transition-all duration-200`}
+              >
+                <Icon size={18} />
+              </div>
+              <div>
                 <div
-                    className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm"
-                    onClick={() => setIsOpen(false)}
-                    aria-hidden="true"
-                />
-            )}
-
-            {/* Side Menu */}
-            <aside
-                className={`fixed top-0 left-0 z-[70] h-full w-80 bg-[#0a0a0a] border-r border-primary/30 dragon-scales transform transition-transform duration-300 ${
-                    isOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
-            >
-                <div className="flex flex-col h-full">
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-primary/30">
-                        <div className="flex items-center gap-3">
-                            <img
-                                src="/assets/generated/dragon-head-logo.dim_64x64.png"
-                                alt="ForeverRaw"
-                                className="h-12 w-12"
-                            />
-                            <div>
-                                <h2 className="text-xl font-bold text-primary font-display">ForeverRaw</h2>
-                                <p className="text-xs text-muted-foreground">Home of the Gargoyle Dragon</p>
-                            </div>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsOpen(false)}
-                            className="hover:bg-primary/20"
-                        >
-                            <X className="h-5 w-5 text-primary" />
-                        </Button>
-                    </div>
-
-                    {/* Menu Items */}
-                    <nav className="flex-1 overflow-y-auto p-4">
-                        <ul className="space-y-2">
-                            {menuItems.map((item) => {
-                                const Icon = item.icon;
-                                const isActive = currentPath === item.path;
-                                const isDisabled = item.proOnly && !isPro && !isAuthenticated;
-
-                                return (
-                                    <li key={item.id}>
-                                        <button
-                                            onClick={() => !isDisabled && handleNavigate(item.path)}
-                                            disabled={isDisabled}
-                                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-all ${
-                                                isActive
-                                                    ? 'bg-primary/20 border-l-4 border-primary text-primary'
-                                                    : isDisabled
-                                                    ? 'text-muted-foreground/50 cursor-not-allowed'
-                                                    : item.highlight
-                                                    ? 'text-accent hover:bg-accent/20 border-l-4 border-accent'
-                                                    : 'text-foreground hover:bg-primary/10 hover:text-primary'
-                                            }`}
-                                        >
-                                            <Icon className="h-5 w-5" />
-                                            <span className="font-medium">{item.label}</span>
-                                            {item.proOnly && !isPro && (
-                                                <Crown className="h-4 w-4 ml-auto text-accent" />
-                                            )}
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </nav>
-
-                    {/* Footer */}
-                    <div className="p-4 border-t border-primary/30">
-                        <p className="text-xs text-center text-muted-foreground">
-                            The Dragon guards your truth
-                        </p>
-                    </div>
+                  className={`font-cinzel text-sm font-semibold tracking-wider ${
+                    item.highlight
+                      ? "text-blood-red"
+                      : isEmber
+                        ? "text-ember-orange"
+                        : "text-stone-200 group-hover:text-blood-red"
+                  } transition-colors duration-200`}
+                >
+                  {item.label}
                 </div>
-            </aside>
-        </>
-    );
+                <div className="text-stone-600 text-xs font-mono mt-0.5">
+                  {item.description}
+                </div>
+              </div>
+              {item.highlight && (
+                <Flame
+                  size={14}
+                  className="ml-auto text-ember-orange animate-pulse"
+                />
+              )}
+              {isEmber && (
+                <RotateCcw size={14} className="ml-auto text-ember-orange/60" />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Auth Footer */}
+      <div className="relative p-4 border-t border-stone-800">
+        <button
+          type="button"
+          onClick={handleAuth}
+          disabled={loginStatus === "logging-in"}
+          data-ocid="sidemenu.auth.button"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-sm bg-stone-900 hover:bg-stone-800 border border-stone-700 hover:border-blood-red/50 text-stone-400 hover:text-stone-200 transition-all duration-200 disabled:opacity-50"
+        >
+          {isAuthenticated ? (
+            <>
+              <LogOut size={16} className="text-blood-red" />
+              <span className="font-mono text-sm">LEAVE THE FORGE</span>
+            </>
+          ) : (
+            <>
+              <LogIn size={16} className="text-ember-orange" />
+              <span className="font-mono text-sm">
+                {loginStatus === "logging-in"
+                  ? "ENTERING..."
+                  : "ENTER THE FORGE"}
+              </span>
+            </>
+          )}
+        </button>
+
+        <p className="text-center text-stone-700 text-xs font-mono mt-3">
+          © {new Date().getFullYear()} FOREVERRAW
+        </p>
+      </div>
+    </div>
+  );
 }

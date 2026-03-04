@@ -1,259 +1,373 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import { useInternetIdentity } from './useInternetIdentity';
-import type { UserProfile, Product, ShoppingItem, StripeConfiguration, UsageStats, MarketConfig, UserUsageStats } from '../backend';
+import type { Principal } from "@dfinity/principal";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { BanRecord, SubscriptionUpdate, UserProfile } from "../backend";
+import { useActor } from "./useActor";
+import { useInternetIdentity } from "./useInternetIdentity";
 
-// User Profile Queries
+// ─── User Profile ────────────────────────────────────────────────────────────
+
 export function useGetCallerUserProfile() {
-    const { actor, isFetching: actorFetching } = useActor();
-    const { identity } = useInternetIdentity();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
-    const query = useQuery<UserProfile | null>({
-        queryKey: ['currentUserProfile', identity?.getPrincipal().toString()],
-        queryFn: async () => {
-            if (!actor || !identity) throw new Error('Actor or identity not available');
-            const principal = identity.getPrincipal();
-            return actor.getUserProfile(principal);
-        },
-        enabled: !!actor && !actorFetching && !!identity,
-        retry: false,
-    });
+  const query = useQuery<UserProfile | null>({
+    queryKey: ["currentUserProfile"],
+    queryFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.getCallerUserProfile();
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+    retry: false,
+  });
 
-    return {
-        ...query,
-        isLoading: actorFetching || query.isLoading,
-        isFetched: !!actor && query.isFetched,
-    };
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
 }
 
 export function useSaveCallerUserProfile() {
-    const { actor } = useActor();
-    const queryClient = useQueryClient();
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: async (profile: UserProfile) => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.saveCallerUserProfile(profile);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
-        },
-    });
+  return useMutation({
+    mutationFn: async (profile: UserProfile) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.saveCallerUserProfile(profile);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
+    },
+  });
 }
 
-// Admin Role Queries
-export function useIsCallerAdmin() {
-    const { actor, isFetching: actorFetching } = useActor();
-    const { identity } = useInternetIdentity();
+// ─── Subscription ─────────────────────────────────────────────────────────────
 
-    return useQuery<boolean>({
-        queryKey: ['isAdmin', identity?.getPrincipal().toString()],
-        queryFn: async () => {
-            if (!actor) return false;
-            try {
-                return await actor.isCallerAdmin();
-            } catch (error) {
-                console.error('Error checking admin status:', error);
-                return false;
-            }
-        },
-        enabled: !!actor && !actorFetching && !!identity,
-        staleTime: 1000 * 60 * 10,
-        retry: false,
-    });
+export function useGetCallerSubscription() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<SubscriptionUpdate | null>({
+    queryKey: ["callerSubscription"],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getCallerSubscription();
+    },
+    enabled: !!actor && !isFetching && !!identity,
+  });
 }
 
-// Product Queries
-export function useGetProducts() {
-    const { actor, isFetching: actorFetching } = useActor();
+export function useUpdateCallerSubscription() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
 
-    return useQuery<Product[]>({
-        queryKey: ['products'],
-        queryFn: async () => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.getProducts();
-        },
-        enabled: !!actor && !actorFetching,
-    });
+  return useMutation({
+    mutationFn: async (subscription: SubscriptionUpdate) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.updateCallerSubscription(subscription);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["callerSubscription"] });
+    },
+  });
 }
 
-// Stripe Queries
-export function useIsStripeConfigured() {
-    const { actor, isFetching: actorFetching } = useActor();
+// ─── Usage Stats ──────────────────────────────────────────────────────────────
 
-    return useQuery<boolean>({
-        queryKey: ['stripeConfigured'],
-        queryFn: async () => {
-            if (!actor) return false;
-            try {
-                return await actor.isStripeConfigured();
-            } catch (error) {
-                console.error('Error checking Stripe configuration:', error);
-                return false;
-            }
-        },
-        enabled: !!actor && !actorFetching,
-        retry: false,
-    });
-}
-
-export function useSetStripeConfiguration() {
-    const { actor } = useActor();
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async (config: StripeConfiguration) => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.setStripeConfiguration(config);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['stripeConfigured'] });
-        },
-    });
-}
-
-export type CheckoutSession = {
-    id: string;
-    url: string;
-};
-
-export function useCreateCheckoutSession() {
-    const { actor } = useActor();
-
-    return useMutation({
-        mutationFn: async (items: ShoppingItem[]): Promise<CheckoutSession> => {
-            if (!actor) throw new Error('Actor not available');
-            const baseUrl = `${window.location.protocol}//${window.location.host}`;
-            const successUrl = `${baseUrl}/payment-success`;
-            const cancelUrl = `${baseUrl}/payment-failure`;
-            const result = await actor.createCheckoutSession(items, successUrl, cancelUrl);
-            const session = JSON.parse(result) as CheckoutSession;
-            if (!session?.url) {
-                throw new Error('Stripe session missing url');
-            }
-            return session;
-        },
-    });
-}
-
-export function useGetStripeSessionStatus() {
-    const { actor } = useActor();
-
-    return useMutation({
-        mutationFn: async (sessionId: string) => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.getStripeSessionStatus(sessionId);
-        },
-    });
-}
-
-// Usage Analytics Queries
-export function useTrackAppOpen() {
-    const { actor } = useActor();
-
-    return useMutation({
-        mutationFn: async () => {
-            if (!actor) {
-                return;
-            }
-            try {
-                await actor.trackAppOpen();
-            } catch (error) {
-                console.error('Failed to track app open:', error);
-            }
-        },
-        retry: false,
-    });
-}
-
-export function useGetUsageStats() {
-    const { actor, isFetching: actorFetching } = useActor();
-    const { data: isAdmin } = useIsCallerAdmin();
-
-    return useQuery<UsageStats>({
-        queryKey: ['usageStats'],
-        queryFn: async () => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.getUsageStats();
-        },
-        enabled: !!actor && !actorFetching && isAdmin === true,
-        retry: false,
-    });
-}
-
-// User Usage Stats (Daily Scans)
 export function useGetCallerUsageStats() {
-    const { actor, isFetching: actorFetching } = useActor();
-    const { identity } = useInternetIdentity();
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
-    return useQuery<UserUsageStats | null>({
-        queryKey: ['callerUsageStats', identity?.getPrincipal().toString()],
-        queryFn: async () => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.getCallerUsageStats();
-        },
-        enabled: !!actor && !actorFetching && !!identity,
-        retry: false,
-    });
+  return useQuery({
+    queryKey: ["callerUsageStats"],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getCallerUsageStats();
+    },
+    enabled: !!actor && !isFetching && !!identity,
+  });
 }
 
 export function useIncrementDailyScans() {
-    const { actor } = useActor();
-    const queryClient = useQueryClient();
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: async () => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.incrementDailyScans();
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['callerUsageStats'] });
-        },
-    });
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.incrementDailyScans();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["callerUsageStats"] });
+    },
+  });
 }
 
-// App Market Configuration Queries
-export function useGetMarketConfig() {
-    const { actor, isFetching: actorFetching } = useActor();
-    const { data: isAdmin } = useIsCallerAdmin();
+// ─── Admin ────────────────────────────────────────────────────────────────────
 
-    return useQuery<MarketConfig>({
-        queryKey: ['marketConfig'],
-        queryFn: async () => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.getMarketConfig();
-        },
-        enabled: !!actor && !actorFetching && isAdmin === true,
-        retry: false,
-    });
+export function useIsCallerAdmin() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<boolean>({
+    queryKey: ["isCallerAdmin"],
+    queryFn: async () => {
+      if (!actor) return false;
+      return actor.isCallerAdmin();
+    },
+    enabled: !!actor && !isFetching && !!identity,
+  });
+}
+
+export function useGetUsageStats() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery({
+    queryKey: ["usageStats"],
+    queryFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (actor as any).getUsageStats();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// ─── Products ─────────────────────────────────────────────────────────────────
+
+export function useGetProducts() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getProducts();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// ─── Stripe ───────────────────────────────────────────────────────────────────
+
+export function useIsStripeConfigured() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ["isStripeConfigured"],
+    queryFn: async () => {
+      if (!actor) return false;
+      return actor.isStripeConfigured();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useSetStripeConfiguration() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (config: {
+      secretKey: string;
+      allowedCountries: string[];
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.setStripeConfiguration(config);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["isStripeConfigured"] });
+    },
+  });
+}
+
+export function useGetStripeSessionStatus() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (sessionId: string) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.getStripeSessionStatus(sessionId);
+    },
+  });
+}
+
+// ─── Market Config ────────────────────────────────────────────────────────────
+
+export function useGetMarketConfig() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery({
+    queryKey: ["marketConfig"],
+    queryFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (actor as any).getMarketConfig();
+    },
+    enabled: !!actor && !isFetching && !!identity,
+  });
 }
 
 export function useUpdateMarketConfig() {
-    const { actor } = useActor();
-    const queryClient = useQueryClient();
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: async (config: MarketConfig) => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.updateMarketConfig(config);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['marketConfig'] });
-        },
-    });
+  return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutationFn: async (config: any) => {
+      if (!actor) throw new Error("Actor not available");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (actor as any).updateMarketConfig(config);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["marketConfig"] });
+    },
+  });
 }
 
 export function usePublish() {
-    const { actor } = useActor();
-    const queryClient = useQueryClient();
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: async () => {
-            if (!actor) throw new Error('Actor not available');
-            return actor.publish();
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['marketConfig'] });
-        },
-    });
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (actor as any).publish();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["marketConfig"] });
+    },
+  });
 }
+
+// ─── Track App Open ───────────────────────────────────────────────────────────
+
+export function useTrackAppOpen() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.trackAppOpen();
+    },
+  });
+}
+
+// ─── Ban Status ───────────────────────────────────────────────────────────────
+
+/**
+ * Check if the currently authenticated user is banned.
+ * Used by BanGate in App.tsx.
+ */
+export function useIsBannedUser() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<boolean>({
+    queryKey: ["isBannedUser", identity?.getPrincipal().toString()],
+    queryFn: async () => {
+      if (!actor || !identity) return false;
+      const principal = identity.getPrincipal();
+      if (principal.isAnonymous()) return false;
+      return actor.isBanned(principal);
+    },
+    enabled: !!actor && !isFetching && !!identity,
+    retry: false,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Check if a specific principal is banned.
+ * Used by MediaUploadGate to check before allowing uploads.
+ */
+export function useIsBanned(principal: Principal | null) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ["isBanned", principal?.toString()],
+    queryFn: async () => {
+      if (!actor || !principal) return false;
+      if (principal.isAnonymous()) return false;
+      return actor.isBanned(principal);
+    },
+    enabled: !!actor && !isFetching && !!principal,
+    retry: false,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Get the full ban record for a principal (self or admin).
+ */
+export function useGetBanStatus(principal: Principal | null) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<BanRecord | null>({
+    queryKey: ["banStatus", principal?.toString()],
+    queryFn: async () => {
+      if (!actor || !principal) return null;
+      if (principal.isAnonymous()) return null;
+      return actor.getBanStatus(principal);
+    },
+    enabled: !!actor && !isFetching && !!principal,
+    retry: false,
+  });
+}
+
+/**
+ * Ban the current authenticated user for media theft.
+ * Called by MediaProtection when theft is detected.
+ */
+export function useBanUserForMediaTheft() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (reason: string) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.banUserForMediaTheft(reason);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["isBannedUser"] });
+      queryClient.invalidateQueries({ queryKey: ["isBanned"] });
+    },
+  });
+}
+
+/**
+ * Admin: ban any principal.
+ */
+export function useBanUser() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async ({
+      principal,
+      reason,
+    }: { principal: Principal; reason: string }) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.banUser(principal, reason);
+    },
+  });
+}
+
+/**
+ * Admin: unban a principal.
+ */
+export function useUnbanUser() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (principal: Principal) => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.unbanUser(principal);
+    },
+  });
+}
+
+// Legacy alias kept for backward compatibility
+export const useReportSelfForMediaTheft = useBanUserForMediaTheft;

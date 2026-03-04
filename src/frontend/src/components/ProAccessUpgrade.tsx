@@ -1,181 +1,232 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Crown, Check, Loader2, AlertCircle } from 'lucide-react';
-import { useCreateCheckoutSession, useIsStripeConfigured } from '../hooks/useQueries';
-import { useApp } from '../contexts/AppContext';
-import { toast } from 'sonner';
-import type { ShoppingItem } from '../backend';
+import { useNavigate } from "@tanstack/react-router";
+import {
+  Brain,
+  Check,
+  Flame,
+  Loader2,
+  MessageSquare,
+  ScanLine,
+  Shield,
+  Zap,
+} from "lucide-react";
+import React, { useState } from "react";
+import { useActor } from "../hooks/useActor";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+
+const FREE_FEATURES = [
+  "Unlimited Chat (Gut Punches)",
+  "Basic Threat Scanner",
+  "Safe Draft Vault",
+  "System Console",
+  "Dragon Protection",
+];
+
+const PRO_FEATURES = [
+  "Everything in Free",
+  "AI Consultant (Dragon Wisdom)",
+  "Advanced Threat Analysis",
+  "Full Resolution Metrics",
+  "Priority Dragon Support",
+  "Therapist Session Access",
+  "Export & Audit Reports",
+];
 
 export default function ProAccessUpgrade() {
-    const [isProcessing, setIsProcessing] = useState(false);
-    const createCheckoutSession = useCreateCheckoutSession();
-    const { data: isStripeConfigured, isLoading: stripeLoading } = useIsStripeConfigured();
-    const { isPro } = useApp();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
 
-    const handleUpgrade = async (priceInCents: number, productName: string) => {
-        if (!isStripeConfigured) {
-            toast.error('Payment system unavailable');
-            return;
-        }
-
-        setIsProcessing(true);
-        try {
-            const items: ShoppingItem[] = [
-                {
-                    productName,
-                    productDescription: 'ForeverRaw Pro Access',
-                    priceInCents: BigInt(priceInCents),
-                    quantity: BigInt(1),
-                    currency: 'usd',
-                },
-            ];
-
-            const session = await createCheckoutSession.mutateAsync(items);
-            if (!session?.url) throw new Error('Stripe session missing url');
-            window.location.href = session.url;
-        } catch (error) {
-            console.error('Checkout error:', error);
-            toast.error('Something broke. Hit retry and punch through.');
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    if (isPro) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-8">
-                <Card className="max-w-2xl dragon-scales border-primary/30">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-primary">
-                            <Crown className="h-6 w-6" />
-                            Pro Access Active
-                        </CardTitle>
-                        <CardDescription>
-                            You already have Pro Access. Punch through limits.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
-            </div>
-        );
+  const handleUpgrade = async () => {
+    if (!actor || !identity) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const origin = window.location.origin;
+      const url = await actor.createCheckoutSession(
+        [
+          {
+            productName: "Pro Dragon Monthly",
+            currency: "USD",
+            quantity: BigInt(1),
+            priceInCents: BigInt(999),
+            productDescription: "Unlimited scans + Pro tools",
+          },
+        ],
+        `${origin}/payment-success`,
+        `${origin}/payment-failure`,
+      );
+      window.location.href = url;
+    } catch (e: any) {
+      setError(
+        e?.message ||
+          "Stripe not configured. Contact admin to activate payments.",
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-        <div className="min-h-screen p-8 pt-24">
-            <div className="container max-w-6xl mx-auto">
-                <div className="mb-12 text-center">
-                    <h1 className="text-6xl font-bold text-primary blood-glow mb-4 font-display">
-                        Upgrade to Pro
-                    </h1>
-                    <p className="text-2xl text-accent ember-glow">
-                        Punch through limits. The Dragon guards unlimited power.
-                    </p>
-                </div>
+  return (
+    <div className="relative min-h-screen bg-void">
+      {/* Background */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/assets/generated/gargoyle-dragon-hero.dim_1920x1080.png"
+          alt=""
+          className="w-full h-full object-cover opacity-10"
+          draggable={false}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-void/90 via-void/70 to-void/95" />
+        <div
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage:
+              "url(/assets/generated/dragon-scale-texture.dim_512x512.png)",
+            backgroundSize: "256px 256px",
+          }}
+        />
+      </div>
 
-                {!isStripeConfigured && !stripeLoading && (
-                    <Alert className="mb-8 border-accent bg-accent/10">
-                        <AlertCircle className="h-5 w-5 text-accent" />
-                        <AlertDescription className="text-accent">
-                            Payment system unavailable. Paid upgrades are temporarily disabled.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                <div className="grid gap-8 md:grid-cols-2">
-                    {/* Free Tier */}
-                    <Card className="dragon-scales border-muted/30">
-                        <CardHeader>
-                            <CardTitle className="text-2xl text-foreground">Free</CardTitle>
-                            <CardDescription>For casual punchers</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <p className="text-4xl font-bold text-foreground">$0</p>
-                                <p className="text-sm text-muted-foreground">Forever</p>
-                            </div>
-                            <ul className="space-y-3">
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span>Unlimited chat</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span>10 scans per day</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span>Basic features</span>
-                                </li>
-                            </ul>
-                            <Button disabled className="w-full" variant="outline">
-                                Current Plan
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {/* Pro Tier */}
-                    <Card className="dragon-scales border-primary/50 shadow-blood relative">
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                            <div className="bg-accent px-4 py-1 rounded-full">
-                                <span className="text-sm font-bold text-accent-foreground">RECOMMENDED</span>
-                            </div>
-                        </div>
-                        <CardHeader>
-                            <CardTitle className="text-2xl text-primary flex items-center gap-2">
-                                <Crown className="h-6 w-6" />
-                                Pro
-                            </CardTitle>
-                            <CardDescription>Punch through to unlimited</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <p className="text-4xl font-bold text-primary">$9.99</p>
-                                <p className="text-sm text-muted-foreground">per month</p>
-                            </div>
-                            <ul className="space-y-3">
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span className="font-bold">Unlimited scans</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span className="font-bold">Full therapist tools</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span>Consultant access</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span>Resolution guidance</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span>Session management</span>
-                                </li>
-                            </ul>
-                            <Button
-                                onClick={() => handleUpgrade(999, 'ForeverRaw Pro Monthly')}
-                                disabled={isProcessing || !isStripeConfigured}
-                                className="w-full h-14 text-lg font-bold forged-metal border-2 border-primary hover:shadow-blood"
-                            >
-                                {isProcessing ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : (
-                                    'PUNCH THROUGH TO PRO'
-                                )}
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <div className="mt-12 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        No filters. No games. Cancel anytime.
-                    </p>
-                </div>
-            </div>
+      <div className="relative z-10 pt-16 px-4 pb-12 max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <img
+            src="/assets/generated/gargoyle-dragon-emblem.dim_256x256.png"
+            alt="Dragon"
+            className="w-24 h-24 object-contain mx-auto mb-4 opacity-90"
+            draggable={false}
+          />
+          <h1
+            className="font-cinzel text-blood-red text-3xl font-bold tracking-widest mb-3"
+            style={{ textShadow: "0 0 20px rgba(139,0,0,0.6)" }}
+          >
+            UPGRADE TO PRO
+          </h1>
+          <p className="text-stone-400 font-mono text-sm tracking-wider">
+            UNLEASH THE FULL POWER OF THE GARGOYLE DRAGON
+          </p>
         </div>
-    );
+
+        {/* Cards */}
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          {/* Free */}
+          <div className="bg-stone-900/80 border border-stone-700 rounded-sm p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Shield size={20} className="text-stone-400" />
+              <h2 className="font-cinzel text-stone-300 font-bold tracking-wider">
+                FREE TIER
+              </h2>
+            </div>
+            <div className="mb-4">
+              <span className="font-cinzel text-stone-200 text-3xl font-bold">
+                $0
+              </span>
+              <span className="text-stone-600 font-mono text-sm ml-2">
+                /forever
+              </span>
+            </div>
+            <ul className="space-y-2">
+              {FREE_FEATURES.map((f) => (
+                <li
+                  key={f}
+                  className="flex items-center gap-2 text-stone-400 font-mono text-sm"
+                >
+                  <Check size={14} className="text-stone-600 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Pro */}
+          <div
+            className="border border-blood-red/60 rounded-sm p-6 relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(139,0,0,0.15) 0%, rgba(20,10,10,0.95) 100%)",
+              boxShadow: "0 0 30px rgba(139,0,0,0.2)",
+            }}
+          >
+            {/* Dragon scale texture */}
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage:
+                  "url(/assets/generated/dragon-scale-texture.dim_512x512.png)",
+                backgroundSize: "128px 128px",
+              }}
+            />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <Flame size={20} className="text-ember-orange" />
+                <h2 className="font-cinzel text-blood-red font-bold tracking-wider">
+                  PRO DRAGON
+                </h2>
+                <span className="ml-auto bg-blood-red/20 border border-blood-red/40 text-blood-red font-mono text-xs px-2 py-0.5 rounded-sm">
+                  POPULAR
+                </span>
+              </div>
+              <div className="mb-4">
+                <span className="font-cinzel text-stone-200 text-3xl font-bold">
+                  $9.99
+                </span>
+                <span className="text-stone-600 font-mono text-sm ml-2">
+                  /month
+                </span>
+              </div>
+              <ul className="space-y-2 mb-6">
+                {PRO_FEATURES.map((f) => (
+                  <li
+                    key={f}
+                    className="flex items-center gap-2 text-stone-300 font-mono text-sm"
+                  >
+                    <Check size={14} className="text-blood-red flex-shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              {!identity ? (
+                <p className="text-center text-stone-500 font-mono text-xs mb-3">
+                  Login via the side menu to upgrade.
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleUpgrade}
+                disabled={loading || !identity}
+                className="w-full py-3 bg-blood-red border border-blood-red text-stone-100 font-cinzel font-bold tracking-widest hover:bg-blood-red/80 transition-all duration-200 rounded-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ boxShadow: "0 0 20px rgba(139,0,0,0.4)" }}
+                data-ocid="upgrade.primary_button"
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Zap size={16} />
+                )}
+                {loading ? "FORGING..." : "FORGE YOUR POWER"}
+              </button>
+              {error && (
+                <p className="mt-2 text-xs font-mono text-red-400 text-center">
+                  {error}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Back */}
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/" })}
+            className="text-stone-600 hover:text-stone-400 font-mono text-sm transition-colors"
+          >
+            ← RETURN TO THE FORGE
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
