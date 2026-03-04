@@ -1,55 +1,66 @@
-# ForeverRaw – Gut Punch (Full Finish Pass)
+# ForeverRaw – Gut Punch
 
 ## Current State
 
-The app is a fully built ForeverRaw / Gut Punch Secure Enclave app with:
-- React frontend, Motoko backend on ICP
-- Routes: `/` (splash), `/chat`, `/scan`, `/consultant`, `/safe-draft`, `/console`, `/profile`, `/upgrade`, `/destroy-rebuild`, `/payment-success`, `/payment-failure`
-- SideMenu with hamburger button (works)
-- ChatScreen with media upload, emoji picker, MediaProtection, Dragon branding
-- ForgeSplashScreen with Owner/Creator credits, Gatekeeper modal, Sanctuary Tools grid, Sonic controls
-- ScanScreen with threat analysis (text input), amber HUD flicker on high risk
-- ConsultantScreen with DRAGONFLIES protocol (login-gated)
-- SafeDraftScreen with local-only vault
-- ConsoleScreen with system status
-- ProfileView with encrypted Extra Something field
-- ProAccessUpgrade page with tier comparison (Forge Your Power button NOT wired to checkout)
-- DestroyRebuildSection with Symbicort check and Sonic module
-- AppContext with daily scan tracking (time-elapsed reset, not midnight reset)
-- Backend: Stripe checkout, ban system, subscription, usage stats, market config
-- Custom emojis in EmojiPicker
-- BandwidthSidebar, SanctuaryModeToggle, MasterStrikeButton, LedgerSearchBar in TacticalHUD
-- Admin dashboard (AdminDashboard.tsx) exists but no route or menu item pointing to it
+The app has a ChatScreen (`/chat`) that is a **local-only, single-user chat** — messages are stored in React state only, not persisted to the backend, and there is no concept of other users. The existing backend has a `chatMessages` Map in main.mo but no public API functions to send or read messages between users. There is no user discovery, no contact list, no conversation threads, and no online presence system.
+
+The existing backend has:
+- User profiles (`saveCallerUserProfile`, `getCallerUserProfile`, `getUserProfile`)
+- Authorization / Internet Identity via `MixinAuthorization`
+- Ban system (`banUser`, `isBanned`, `getBanStatus`)
+- Subscription system
+- `chatMessages` map defined but unused
 
 ## Requested Changes (Diff)
 
 ### Add
-- **Admin Panel route & menu entry** – Add `/admin` route for AdminDashboard and an "Admin" item at the bottom of SideMenu (visible only when identity is admin or when `isCallerAdmin` returns true; fall back to showing it always for now so it's accessible)
-- **Midnight scan reset** – Replace the time-elapsed daily scan reset with a true calendar-date reset: check if `lastScanDate !== today's date string` and reset; run this check on app load and each time the scan screen is visited
-- **Scan count UI on ScanScreen** – Show "Scans left: X/10" for free users; show "UNLIMITED" for Pro users. Gate the Scan button: disable and show upgrade prompt once limit is reached (10 scans/day free)
-- **Scan count on ForgeSplashScreen** – Show current scan count badge on the ANXIETY SCAN card
-- **Stripe checkout wiring** – Wire the "FORGE YOUR POWER" button in ProAccessUpgrade to call `createCheckoutSession` via the actor. Use the first product from `getProducts()` if available, or fallback to a hardcoded price. Redirect to `/payment-success` on success and `/payment-failure` on cancel.
-- **Voice navigation** – Add a floating microphone button (bottom-right) on the main layout that listens for commands: "go to chat", "open scan", "open consultant", "open safe draft", "open console", "open profile", "upgrade" — and navigates accordingly. Show a brief "listening…" toast while active. Use the Web Speech API (`window.SpeechRecognition`).
+
+**Backend (Motoko):**
+- `UserPublicProfile` type: `{ displayName: Text; tagLine: ?Text; isOnline: Bool; lastSeen: Int }`
+- `ConversationThread` type keyed by a sorted pair of principals
+- `ChatMsg` type: `{ id: Text; senderId: Principal; content: Text; timestamp: Int; mediaBlobId: ?Text; isRead: Bool }`
+- `sendMessage(receiverId: Principal, content: Text, mediaBlobId: ?Text)` — saves a message into the thread between caller and receiver; enforces ban check
+- `getMessages(otherUser: Principal, limit: Nat, beforeTimestamp: ?Int)` — returns messages in a thread, paginated newest-first
+- `markMessagesRead(otherUser: Principal)` — marks all messages in thread as read
+- `getConversations()` — returns list of conversation threads the caller is part of, with last message and unread count
+- `searchUsers(query: Text)` — searches public profiles by displayName or tagLine
+- `setOnlineStatus(isOnline: Bool)` — caller sets their online/offline presence
+- `getUserPublicProfile(user: Principal)` — returns public profile
+- `saveCallerPublicProfile(profile: UserPublicProfile)` — saves caller's public profile
+
+**Frontend:**
+- `PeopleScreen` (`/people`) — user search with username/tag search input, result cards showing avatar, displayName, tagLine, online status, and "Start Convo" button
+- `ConversationsListScreen` (`/conversations`) — list of all active conversation threads with last message preview, unread badge, and online indicator
+- `DirectChatScreen` (`/chat/:userId`) — full 1-on-1 real-time chat screen with:
+  - Dragon-scale dark background, stone-carved message bubbles
+  - Blood-red messages (mine), stone-gray messages (theirs)
+  - "Type your punch..." input with dragon-claw send button
+  - Photo/video upload button with MediaProtection and ban enforcement
+  - ForeverRaw custom emoji picker
+  - Polling for new messages (every 3 seconds)
+  - Online/offline status header
+  - Media protection (screenshot block, watermark)
+- Update `SideMenu` to add "People" and "Conversations" nav items
+- Update `ChatScreen` (`/chat`) — keep as the broadcast/self chat for solo punches; rename header to distinguish from direct chat
+- Update `App.tsx` routes to add `/people`, `/conversations`, `/chat/:userId`
 
 ### Modify
-- **AppContext midnight reset** – Change `incrementDailyScans` to check today's calendar date string (`new Date().toDateString()`) against stored `lastScanDate`; reset to 0 if different before incrementing. Also add a `useEffect` on app mount that resets if date changed.
-- **ProAccessUpgrade Stripe button** – Replace the static button with a wired version that calls `createCheckoutSession` and redirects to Stripe checkout URL.
-- **SideMenu** – Add "Admin" nav item at the bottom of the nav list (before the auth footer), pointing to `/admin`. Show for all users (admin-only enforcement happens inside AdminDashboard).
-- **ChatScreen route redirect** – The Chat item in the side menu currently points to `/` but the chat component is at `/chat`. The SideMenu already uses `/` for Chat which maps to ForgeSplashScreen. Fix: change the Chat menu item path to `/chat` so it goes directly to the chat screen.
-- **ForgeSplashScreen** – "START A GUT PUNCH" button already goes to `/chat` — keep. Add a subtle scan counter badge to the Anxiety Scan tool card.
-- **ConsultantScreen** – Remove the login gate on the DRAGONFLIES protocol accordion steps. The consultant screen shows useful free-tier content; only gate the AI-powered deep analysis if/when that's added. Currently it just shows the protocol steps — these should be visible without login.
+
+- `SideMenu.tsx` — add "People" (user search) and "Conversations" (inbox) items
+- `App.tsx` — add new routes
+- `ChatScreen.tsx` — minor: keep as-is but update header label to "THE FORGE – YOUR PUNCHES" to distinguish from direct DMs
+- `backend.d.ts` — regenerated automatically from new Motoko
 
 ### Remove
+
 - Nothing removed
 
 ## Implementation Plan
 
-1. **AppContext**: Update daily scan reset logic to use calendar date comparison. Add on-mount reset check.
-2. **ScanScreen**: Add scan count display ("Scans left: X/10" or "UNLIMITED"). Disable scan button when limit reached, show upgrade CTA.
-3. **ForgeSplashScreen**: Add scan count badge on the Anxiety Scan card.
-4. **ProAccessUpgrade**: Wire "FORGE YOUR POWER" button to `createCheckoutSession` actor call. Show loading state. Handle errors gracefully (show error if Stripe not configured).
-5. **SideMenu**: Add Admin menu item (path `/admin`). Fix Chat path to `/chat`.
-6. **App.tsx**: Add `/admin` route for AdminDashboard.
-7. **Voice navigation**: Add `VoiceNav` component with floating mic button, SpeechRecognition hook, and route dispatch. Mount in AppLayout.
-8. **ConsultantScreen**: Remove login gate from DRAGONFLIES steps (show them to everyone).
-9. **All components**: Ensure data-ocid markers on all interactive elements.
+1. Generate new Motoko backend with full user-to-user messaging API (sendMessage, getMessages, getConversations, searchUsers, setOnlineStatus, getUserPublicProfile, saveCallerPublicProfile, markMessagesRead)
+2. Build `PeopleScreen` — search bar, user result cards, online indicator, "Start Convo" CTA
+3. Build `ConversationsListScreen` — thread list, last message, unread count badge, online dot
+4. Build `DirectChatScreen` — full ForeverRaw 1-on-1 chat: stone-carved bubbles, blood-red/stone-gray, emoji picker, media upload with protection, polling for new messages, header with other user's name + online status
+5. Update `SideMenu` with new nav items (People, Conversations)
+6. Update `App.tsx` with new routes
+7. Wire all screens to backend queries/mutations via new hooks

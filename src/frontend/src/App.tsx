@@ -16,12 +16,15 @@ import BandwidthSidebar from "./components/BandwidthSidebar";
 import ChatScreen from "./components/ChatScreen";
 import ConsoleScreen from "./components/ConsoleScreen";
 import ConsultantScreen from "./components/ConsultantScreen";
+import ConversationsListScreen from "./components/ConversationsListScreen";
 import DestroyRebuildSection from "./components/DestroyRebuildSection";
+import DirectChatScreen from "./components/DirectChatScreen";
 import ForgeSplashScreen from "./components/ForgeSplashScreen";
 import LedgerSearchBar from "./components/LedgerSearchBar";
 import MasterStrikeButton from "./components/MasterStrikeButton";
 import PaymentFailure from "./components/PaymentFailure";
 import PaymentSuccess from "./components/PaymentSuccess";
+import PeopleScreen from "./components/PeopleScreen";
 import ProAccessUpgrade from "./components/ProAccessUpgrade";
 import ProfileView from "./components/ProfileView";
 import SafeDraftScreen from "./components/SafeDraftScreen";
@@ -228,6 +231,24 @@ const adminRoute = createRoute({
   component: AdminDashboard,
 });
 
+const peopleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/people",
+  component: PeopleScreen,
+});
+
+const conversationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/conversations",
+  component: ConversationsListScreen,
+});
+
+const directChatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/chat/$userId",
+  component: DirectChatScreen,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   chatRoute,
@@ -241,6 +262,9 @@ const routeTree = rootRoute.addChildren([
   paymentFailureRoute,
   destroyRebuildRoute,
   adminRoute,
+  peopleRoute,
+  conversationsRoute,
+  directChatRoute,
 ]);
 
 const router = createRouter({ routeTree });

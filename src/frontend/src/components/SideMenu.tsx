@@ -6,12 +6,14 @@ import {
   Flame,
   LogIn,
   LogOut,
+  MessageCircle,
   MessageSquare,
   RotateCcw,
   ScanLine,
   Settings,
   Terminal,
   User,
+  Users,
   X,
   Zap,
 } from "lucide-react";
@@ -41,6 +43,18 @@ const menuItems = [
     path: "/consultant",
     icon: Brain,
     description: "Dragon Wisdom",
+  },
+  {
+    label: "People",
+    path: "/people",
+    icon: Users,
+    description: "Find Souls",
+  },
+  {
+    label: "Conversations",
+    path: "/conversations",
+    icon: MessageCircle,
+    description: "Your Punches",
   },
   {
     label: "Safe Draft",
