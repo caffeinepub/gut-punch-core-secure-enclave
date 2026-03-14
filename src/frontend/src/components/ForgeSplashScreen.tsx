@@ -2,7 +2,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { Brain, FileText, Flame, Music, ScanLine, Zap } from "lucide-react";
 import React from "react";
 import { FREE_TIER_DAILY_LIMIT, useApp } from "../contexts/AppContext";
-import GatekeeperModal from "./GatekeeperModal";
 import SonicSignatureModule from "./SonicSignatureModule";
 
 const sanctuaryTools = [
@@ -46,9 +45,6 @@ export default function ForgeSplashScreen() {
 
   return (
     <div className="relative min-h-screen bg-void overflow-x-hidden">
-      {/* Gatekeeper Modal — shown on first visit */}
-      <GatekeeperModal />
-
       {/* Hero Background */}
       <div className="absolute inset-0 z-0">
         <img

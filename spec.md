@@ -1,66 +1,42 @@
-# ForeverRaw – Gut Punch
+# Gut-Punch / ForeverRaw – Tactical Overlap Update
 
 ## Current State
-
-The app has a ChatScreen (`/chat`) that is a **local-only, single-user chat** — messages are stored in React state only, not persisted to the backend, and there is no concept of other users. The existing backend has a `chatMessages` Map in main.mo but no public API functions to send or read messages between users. There is no user discovery, no contact list, no conversation threads, and no online presence system.
-
-The existing backend has:
-- User profiles (`saveCallerUserProfile`, `getCallerUserProfile`, `getUserProfile`)
-- Authorization / Internet Identity via `MixinAuthorization`
-- Ban system (`banUser`, `isBanned`, `getBanStatus`)
-- Subscription system
-- `chatMessages` map defined but unused
+- App loads `ForgeSplashScreen` at `/` with GatekeeperModal blocking on first visit
+- ChatScreen at `/chat` is the main interactive screen
+- ScanScreen at `/scan` handles text analysis with daily limit
+- TacticalHUD (BandwidthSidebar, SanctuaryModeToggle, MasterStrikeButton, LedgerSearchBar) is rendered as fixed overlay
+- No heart rate / camera vitals detection exists
+- No sensory grounding wheel exists
+- No sovereignty meter exists
+- GatekeeperModal is a blocking dialog on first visit
+- Language: "crisis", "emergency" terminology may be present in various screens
 
 ## Requested Changes (Diff)
 
 ### Add
-
-**Backend (Motoko):**
-- `UserPublicProfile` type: `{ displayName: Text; tagLine: ?Text; isOnline: Bool; lastSeen: Int }`
-- `ConversationThread` type keyed by a sorted pair of principals
-- `ChatMsg` type: `{ id: Text; senderId: Principal; content: Text; timestamp: Int; mediaBlobId: ?Text; isRead: Bool }`
-- `sendMessage(receiverId: Principal, content: Text, mediaBlobId: ?Text)` — saves a message into the thread between caller and receiver; enforces ban check
-- `getMessages(otherUser: Principal, limit: Nat, beforeTimestamp: ?Int)` — returns messages in a thread, paginated newest-first
-- `markMessagesRead(otherUser: Principal)` — marks all messages in thread as read
-- `getConversations()` — returns list of conversation threads the caller is part of, with last message and unread count
-- `searchUsers(query: Text)` — searches public profiles by displayName or tagLine
-- `setOnlineStatus(isOnline: Bool)` — caller sets their online/offline presence
-- `getUserPublicProfile(user: Principal)` — returns public profile
-- `saveCallerPublicProfile(profile: UserPublicProfile)` — saves caller's public profile
-
-**Frontend:**
-- `PeopleScreen` (`/people`) — user search with username/tag search input, result cards showing avatar, displayName, tagLine, online status, and "Start Convo" button
-- `ConversationsListScreen` (`/conversations`) — list of all active conversation threads with last message preview, unread badge, and online indicator
-- `DirectChatScreen` (`/chat/:userId`) — full 1-on-1 real-time chat screen with:
-  - Dragon-scale dark background, stone-carved message bubbles
-  - Blood-red messages (mine), stone-gray messages (theirs)
-  - "Type your punch..." input with dragon-claw send button
-  - Photo/video upload button with MediaProtection and ban enforcement
-  - ForeverRaw custom emoji picker
-  - Polling for new messages (every 3 seconds)
-  - Online/offline status header
-  - Media protection (screenshot block, watermark)
-- Update `SideMenu` to add "People" and "Conversations" nav items
-- Update `ChatScreen` (`/chat`) — keep as the broadcast/self chat for solo punches; rename header to distinguish from direct chat
-- Update `App.tsx` routes to add `/people`, `/conversations`, `/chat/:userId`
+- **SovereigntyMeter** component: animated vertical meter that persists as a background layer on the chat screen, displayed behind message content. Shows a gradient bar from 0-100 with dragon-themed labels. Pulses with BPM state.
+- **SensoryGroundingWheel** component: interactive circular 5-4-3-2-1 grounding protocol. Five interactive arc segments (See/Touch/Sound/Feel/Taste). Clicking each segment activates that stage. Stage 5 = text input for 5 objects. Stage 4 = triggers HeartRateMonitor camera scan. Stage 3 = plays built-in ambient stabilizing frequency (432Hz tone generated via Web Audio API). Stages 2/1 = triggers haptic vibration pattern at 60BPM (navigator.vibrate).
+- **HeartRateMonitor** component: uses native camera API (getUserMedia with rear camera). Shows live video feed with overlay instructions. Reads pixel brightness values from canvas to detect pulse (PPG). Outputs BPM in real time. Maps BPM to three states: High >100 → Crimson Pulse + "Intense spike detected. Lock in. Reset Breath.", Med 85–100 → Amber Glow + "Physical spike detected. You are safe. Take control—Reset Breath.", Low <85 → Sovereign Green + "Standing Firm. Sovereignty maintained."
+- **DragonBreathing** animated overlay: CSS keyframe animation showing dragon silhouette that slowly expands/contracts on a 4-second cycle, placed as absolute background layer behind content
 
 ### Modify
-
-- `SideMenu.tsx` — add "People" (user search) and "Conversations" (inbox) items
-- `App.tsx` — add new routes
-- `ChatScreen.tsx` — minor: keep as-is but update header label to "THE FORGE – YOUR PUNCHES" to distinguish from direct DMs
-- `backend.d.ts` — regenerated automatically from new Motoko
+- **App.tsx route `/`**: Remove ForgeSplashScreen as the index route. Redirect `/` directly to `/chat`. The GatekeeperModal moves to ChatScreen as a one-time overlay (not blocking full navigation).
+- **ChatScreen**: Add SovereigntyMeter as a fixed left-edge background layer. Add floating "GROUNDING" button (bottom-right area, above voice nav) that opens the SensoryGroundingWheel as a full-screen overlay. Add Dragon breathing animation behind the message list. Keep all existing chat, emoji, and media upload functionality intact.
+- **GatekeeperModal**: Make it non-blocking. Instead of replacing app render, it appears as a dismissible overlay on first visit, bypassed by clicking anywhere or pressing Enter. Auto-dismisses after 3 seconds.
+- **ScanScreen + ConsultantScreen + other screens**: Remove any use of "panic", "emergency", "crisis" language from UI text. Replace with sovereign equivalents: "intensity spike", "heightened state", "resolution needed", "ground your signal".
+- **Language guardrails**: Audit ForgeSplashScreen, ConsultantScreen, ScanScreen, BanScreen text for prohibited terms and replace.
 
 ### Remove
-
-- Nothing removed
+- TikTok Login Kit integration (not supported on this platform). Stage 3 of the wheel uses a local Web Audio API 432Hz ambient tone instead.
+- Splash screen as the default landing — users land directly in chat now.
 
 ## Implementation Plan
-
-1. Generate new Motoko backend with full user-to-user messaging API (sendMessage, getMessages, getConversations, searchUsers, setOnlineStatus, getUserPublicProfile, saveCallerPublicProfile, markMessagesRead)
-2. Build `PeopleScreen` — search bar, user result cards, online indicator, "Start Convo" CTA
-3. Build `ConversationsListScreen` — thread list, last message, unread count badge, online dot
-4. Build `DirectChatScreen` — full ForeverRaw 1-on-1 chat: stone-carved bubbles, blood-red/stone-gray, emoji picker, media upload with protection, polling for new messages, header with other user's name + online status
-5. Update `SideMenu` with new nav items (People, Conversations)
-6. Update `App.tsx` with new routes
-7. Wire all screens to backend queries/mutations via new hooks
+1. Generate dragon breathing animation background image
+2. Create `HeartRateMonitor.tsx` — camera-based PPG with BPM computation, color mapping, and sovereign commands
+3. Create `SovereigntyMeter.tsx` — animated vertical meter (0-100), responds to BPM state via context
+4. Create `SensoryGroundingWheel.tsx` — SVG arc-based interactive wheel, 5 stages, integrates HeartRateMonitor for Stage 4, Web Audio for Stage 3, vibration for Stage 2/1
+5. Add `bpmState` to `AppContext` (currentBpm, bpmCategory: 'crimson'|'amber'|'sovereign')
+6. Modify `App.tsx`: index route → `/chat`, add redirect
+7. Modify `ChatScreen.tsx`: add SovereigntyMeter, DragonBreathing animation, Grounding Wheel trigger button, move GatekeeperModal here
+8. Modify `GatekeeperModal.tsx`: auto-dismiss after 3s, allow click-anywhere to bypass
+9. Apply language guardrails to ScanScreen, ConsultantScreen, ForgeSplashScreen

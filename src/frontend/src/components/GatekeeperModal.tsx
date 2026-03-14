@@ -17,6 +17,12 @@ export default function GatekeeperModal() {
     const dismissed = localStorage.getItem(GATEKEEPER_KEY);
     if (!dismissed) {
       setOpen(true);
+      // Auto-dismiss after 3 seconds
+      const timer = setTimeout(() => {
+        localStorage.setItem(GATEKEEPER_KEY, "true");
+        setOpen(false);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -26,16 +32,16 @@ export default function GatekeeperModal() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={handleEnter}>
       <DialogContent
         className="max-w-md border-blood-red/60 bg-void"
         style={{
           background: "linear-gradient(135deg, #0a0a0a 0%, #111111 100%)",
           boxShadow: "0 0 40px rgba(139,0,0,0.4)",
         }}
-        // Prevent closing by clicking outside or pressing Escape
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
+        // Allow closing by clicking outside
+        onInteractOutside={handleEnter}
+        onEscapeKeyDown={handleEnter}
       >
         {/* Dragon scale texture */}
         <div

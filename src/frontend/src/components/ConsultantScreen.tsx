@@ -18,7 +18,7 @@ const DRAGONFLIES_TIPS = [
   },
   {
     title: "G – Ground",
-    body: "Return to your body. Breathe. The Dragon does not act from panic — it acts from power.",
+    body: "Return to your body. Breathe. The Dragon does not act from heightened reaction — it acts from power.",
   },
   {
     title: "O – Options",

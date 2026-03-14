@@ -6,6 +6,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  redirect,
 } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import type React from "react";
@@ -162,7 +163,10 @@ const rootRoute = createRootRoute({ component: AppLayout });
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: ForgeSplashScreen,
+  beforeLoad: () => {
+    throw redirect({ to: "/chat" });
+  },
+  component: ChatScreen,
 });
 
 const chatRoute = createRoute({
@@ -249,6 +253,12 @@ const directChatRoute = createRoute({
   component: DirectChatScreen,
 });
 
+const forgeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/forge",
+  component: ForgeSplashScreen,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   chatRoute,
@@ -265,6 +275,7 @@ const routeTree = rootRoute.addChildren([
   peopleRoute,
   conversationsRoute,
   directChatRoute,
+  forgeRoute,
 ]);
 
 const router = createRouter({ routeTree });

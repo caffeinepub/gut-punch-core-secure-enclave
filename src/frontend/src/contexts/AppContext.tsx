@@ -7,6 +7,7 @@ import React, {
   useCallback,
   type ReactNode,
 } from "react";
+import type { BpmCategory } from "../components/HeartRateMonitor";
 import { usePersistedState } from "../hooks/usePersistedState";
 import { useGetCallerSubscription } from "../hooks/useQueries";
 import type {
@@ -58,7 +59,16 @@ export interface AnxietyToolState {
   consultantSessionData: Record<string, unknown>;
 }
 
+// BPM data from physiological monitor
+export interface BpmData {
+  bpm: number;
+  category: BpmCategory;
+}
+
 interface AppContextType {
+  // BPM / physiological state
+  bpmData: BpmData | null;
+  setBpmState: (bpm: number, category: BpmCategory) => void;
   // Settings
   settings: AppSettings;
   updateSettings: (settings: Partial<AppSettings>) => void;
@@ -116,6 +126,12 @@ const DEFAULT_ANXIETY_TOOL_STATE: AnxietyToolState = {
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [bpmData, setBpmData] = useState<BpmData | null>(null);
+
+  const setBpmState = useCallback((bpm: number, category: BpmCategory) => {
+    setBpmData({ bpm, category });
+  }, []);
+
   const [settings, setSettings] = usePersistedState<AppSettings>(
     "zts-settings",
     DEFAULT_SETTINGS,
@@ -327,6 +343,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: setDailyScanCount is stable setter
   const contextValue = useMemo(
     () => ({
+      bpmData,
+      setBpmState,
       settings,
       updateSettings,
       history,
@@ -357,6 +375,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addAnxietyToolLog,
     }),
     [
+      bpmData,
+      setBpmState,
       settings,
       updateSettings,
       history,
