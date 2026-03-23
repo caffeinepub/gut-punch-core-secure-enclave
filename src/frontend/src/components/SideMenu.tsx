@@ -1,9 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import {
+  BookOpen,
   Brain,
   FileText,
   Flame,
+  Globe,
+  Link,
   LogIn,
   LogOut,
   MessageCircle,
@@ -11,13 +14,15 @@ import {
   RotateCcw,
   ScanLine,
   Settings,
+  Shield,
+  Target,
   Terminal,
   User,
   Users,
   X,
   Zap,
 } from "lucide-react";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 
 interface SideMenuProps {
@@ -33,6 +38,36 @@ const menuItems = [
     description: "Unlimited Punches",
   },
   {
+    label: "First Aid Stop",
+    path: "/ground-now",
+    icon: Shield,
+    description: "Ground Now · No Login",
+  },
+  {
+    label: "Resolution Engine",
+    path: "/resolution",
+    icon: Target,
+    description: "FMES Tracking",
+  },
+  {
+    label: "The Village",
+    path: "/village",
+    icon: Globe,
+    description: "Raw Community Feed",
+  },
+  {
+    label: "Journal",
+    path: "/journal",
+    icon: BookOpen,
+    description: "Encrypted Sovereignty Log",
+  },
+  {
+    label: "Therapist Link",
+    path: "/therapist",
+    icon: Link,
+    description: "Connect & Track",
+  },
+  {
     label: "Scan",
     path: "/scan",
     icon: ScanLine,
@@ -44,12 +79,7 @@ const menuItems = [
     icon: Brain,
     description: "Dragon Wisdom",
   },
-  {
-    label: "People",
-    path: "/people",
-    icon: Users,
-    description: "Find Souls",
-  },
+  { label: "People", path: "/people", icon: Users, description: "Find Souls" },
   {
     label: "Conversations",
     path: "/conversations",
@@ -67,7 +97,6 @@ const menuItems = [
     path: "/destroy-rebuild",
     icon: RotateCcw,
     description: "Sovereign Audio Work",
-    highlight: false,
     ember: true,
   },
   {
@@ -107,20 +136,16 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
   const isAuthenticated = !!identity;
 
-  // Swipe to close
   useEffect(() => {
     const el = menuRef.current;
     if (!el) return;
-
     const handleTouchStart = (e: TouchEvent) => {
       touchStartX.current = e.touches[0].clientX;
     };
-
     const handleTouchEnd = (e: TouchEvent) => {
       const diff = touchStartX.current - e.changedTouches[0].clientX;
       if (diff > 60) onClose();
     };
-
     el.addEventListener("touchstart", handleTouchStart, { passive: true });
     el.addEventListener("touchend", handleTouchEnd, { passive: true });
     return () => {
@@ -135,23 +160,11 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         touchStartX.current = e.touches[0].clientX;
       }
     };
-    const handleEdgeSwipeEnd = (e: TouchEvent) => {
-      if (touchStartX.current < 20) {
-        const diff = e.changedTouches[0].clientX - touchStartX.current;
-        if (diff > 60 && !isOpen) {
-          // Signal open — handled by parent
-        }
-      }
-    };
     document.addEventListener("touchstart", handleEdgeSwipe, { passive: true });
-    document.addEventListener("touchend", handleEdgeSwipeEnd, {
-      passive: true,
-    });
     return () => {
       document.removeEventListener("touchstart", handleEdgeSwipe);
-      document.removeEventListener("touchend", handleEdgeSwipeEnd);
     };
-  }, [isOpen]);
+  }, []);
 
   const handleNavigate = (path: string) => {
     navigate({ to: path });
@@ -166,8 +179,9 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
     } else {
       try {
         await login();
-      } catch (err: any) {
-        if (err?.message === "User is already authenticated") {
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "";
+        if (msg === "User is already authenticated") {
           await clear();
           setTimeout(() => login(), 300);
         }
@@ -188,7 +202,6 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         boxShadow: isOpen ? "4px 0 30px rgba(139, 0, 0, 0.3)" : "none",
       }}
     >
-      {/* Dragon scale texture overlay */}
       <div
         className="absolute inset-0 opacity-5 pointer-events-none"
         style={{
@@ -198,7 +211,6 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         }}
       />
 
-      {/* Header */}
       <div className="relative p-6 border-b border-stone-800">
         <div className="flex items-center justify-between mb-4">
           <button
@@ -209,8 +221,6 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
             <X size={20} />
           </button>
         </div>
-
-        {/* Dragon emblem */}
         <div className="flex flex-col items-center">
           <img
             src="/assets/generated/gargoyle-dragon-emblem.dim_256x256.png"
@@ -229,12 +239,14 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         </div>
       </div>
 
-      {/* Nav Items */}
-      <nav className="relative flex-1 py-4 overflow-y-auto">
+      <nav
+        className="relative flex-1 py-4 overflow-y-auto"
+        style={{ maxHeight: "calc(100vh - 240px)" }}
+      >
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isEmber = (item as any).ember;
-          const isAdmin = (item as any).admin;
+          const isEmber = (item as { ember?: boolean }).ember;
+          const isAdmin = (item as { admin?: boolean }).admin;
           const ocid = isAdmin
             ? "sidemenu.admin.link"
             : `sidemenu.${item.label.toLowerCase().replace(/[\s&]+/g, "_")}.link`;
@@ -293,7 +305,6 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         })}
       </nav>
 
-      {/* Auth Footer */}
       <div className="relative p-4 border-t border-stone-800">
         <button
           type="button"
@@ -318,7 +329,6 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
             </>
           )}
         </button>
-
         <p className="text-center text-stone-700 text-xs font-mono mt-3">
           © {new Date().getFullYear()} FOREVERRAW
         </p>

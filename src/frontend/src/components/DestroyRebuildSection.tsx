@@ -1,6 +1,7 @@
-import { Flame, Music, RotateCcw, Wind, Zap } from "lucide-react";
-import React, { useState } from "react";
+import { Flame, Wind } from "lucide-react";
+import { useState } from "react";
 import { useApp } from "../contexts/AppContext";
+import AzraelGutCheck from "./AzraelGutCheck";
 import SonicSignatureModule from "./SonicSignatureModule";
 import SymbicortCheckModal from "./SymbicortCheckModal";
 
@@ -82,7 +83,9 @@ export default function DestroyRebuildSection() {
 
         {/* Content — only fully interactive after breath confirmed */}
         <div
-          className={`space-y-6 transition-opacity duration-500 ${breathConfirmed ? "opacity-100" : "opacity-30 pointer-events-none"}`}
+          className={`space-y-6 transition-opacity duration-500 ${
+            breathConfirmed ? "opacity-100" : "opacity-30 pointer-events-none"
+          }`}
         >
           {/* Sovereign Declaration */}
           <div
@@ -94,7 +97,7 @@ export default function DestroyRebuildSection() {
             }}
           >
             <div className="flex items-start gap-3">
-              <Zap
+              <Flame
                 size={18}
                 className="text-ember-orange mt-0.5 flex-shrink-0"
               />
@@ -123,65 +126,8 @@ export default function DestroyRebuildSection() {
           {/* Sonic Signature Module — silent mode in Inner Forge */}
           <SonicSignatureModule silentMode={isInnerForge} />
 
-          {/* Audio Work Area */}
-          <div
-            className="p-5"
-            style={{
-              border: "1px solid oklch(0.22 0.01 270)",
-              background: "oklch(0.09 0.006 270)",
-            }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <Music size={18} className="text-stone-400" />
-              <h3 className="font-cinzel text-stone-300 text-sm font-bold tracking-wider">
-                AUDIO WORK SESSION
-              </h3>
-            </div>
-
-            <div className="space-y-3">
-              {[
-                {
-                  phase: "DESTROY",
-                  desc: "Release the old patterns. Let the metal strip them away.",
-                  color: "text-blood-red",
-                  borderColor: "oklch(0.38 0.18 25 / 0.3)",
-                },
-                {
-                  phase: "PROCESS",
-                  desc: "Sit in the fire. Feel the transformation happening.",
-                  color: "text-ember-orange",
-                  borderColor: "oklch(0.62 0.18 45 / 0.3)",
-                },
-                {
-                  phase: "REBUILD",
-                  desc: "Forge the new identity. Stronger. Sovereign. Unbreakable.",
-                  color: "text-stone-300",
-                  borderColor: "oklch(0.22 0.01 270)",
-                },
-              ].map(({ phase, desc, color, borderColor }) => (
-                <div
-                  key={phase}
-                  className="p-3"
-                  style={{
-                    border: `1px solid ${borderColor}`,
-                    background: "oklch(0.08 0.005 270)",
-                  }}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <RotateCcw size={12} className={color} />
-                    <span
-                      className={`font-cinzel text-xs font-bold tracking-widest ${color}`}
-                    >
-                      {phase}
-                    </span>
-                  </div>
-                  <p className="text-stone-500 font-mono text-xs leading-relaxed">
-                    {desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Azrael Gut Check — replaces static phase cards */}
+          <AzraelGutCheck />
 
           {/* Journaling prompt — no audio, no alerts */}
           <div

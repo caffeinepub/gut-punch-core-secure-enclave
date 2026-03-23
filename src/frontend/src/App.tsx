@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import type React from "react";
-import { useEffect } from "react";
 import AdminDashboard from "./components/AdminDashboard";
 import BanScreen from "./components/BanScreen";
 import BandwidthSidebar from "./components/BandwidthSidebar";
@@ -21,6 +20,7 @@ import ConversationsListScreen from "./components/ConversationsListScreen";
 import DestroyRebuildSection from "./components/DestroyRebuildSection";
 import DirectChatScreen from "./components/DirectChatScreen";
 import ForgeSplashScreen from "./components/ForgeSplashScreen";
+import GroundNowSection from "./components/GroundNowSection";
 import LedgerSearchBar from "./components/LedgerSearchBar";
 import MasterStrikeButton from "./components/MasterStrikeButton";
 import PaymentFailure from "./components/PaymentFailure";
@@ -28,10 +28,14 @@ import PaymentSuccess from "./components/PaymentSuccess";
 import PeopleScreen from "./components/PeopleScreen";
 import ProAccessUpgrade from "./components/ProAccessUpgrade";
 import ProfileView from "./components/ProfileView";
+import ResolutionTracker from "./components/ResolutionTracker";
 import SafeDraftScreen from "./components/SafeDraftScreen";
 import SanctuaryModeToggle from "./components/SanctuaryModeToggle";
 import ScanScreen from "./components/ScanScreen";
 import SideMenu from "./components/SideMenu";
+import SovereigntyJournal from "./components/SovereigntyJournal";
+import TherapistLink from "./components/TherapistLink";
+import VillageFeed from "./components/VillageFeed";
 import VoiceNav from "./components/VoiceNav";
 import { AppProvider, useApp } from "./contexts/AppContext";
 import { MenuProvider, useMenu } from "./contexts/MenuContext";
@@ -88,7 +92,6 @@ function TacticalHUD() {
 
   return (
     <>
-      {/* Ledger Search Header Bar */}
       <div
         className="fixed top-0 left-0 right-0 z-40"
         style={{
@@ -106,24 +109,18 @@ function TacticalHUD() {
         }}
       >
         <div className="flex items-center gap-3 py-2">
-          {/* Spacer for hamburger */}
           <div style={{ width: 8 }} />
-          {/* Ledger Search */}
           <div className="flex-1">
             <LedgerSearchBar />
           </div>
-          {/* Sanctuary Toggle */}
           <div className="shrink-0">
             <SanctuaryModeToggle />
           </div>
-          {/* Master Strike */}
           <div className="shrink-0">
             <MasterStrikeButton />
           </div>
         </div>
       </div>
-
-      {/* Bandwidth Sidebar */}
       <BandwidthSidebar />
     </>
   );
@@ -148,7 +145,6 @@ function AppLayout() {
         />
       )}
       <BanGate>
-        {/* Push content below the fixed HUD bar */}
         <div style={{ paddingTop: 72 }}>
           <Outlet />
         </div>
@@ -164,9 +160,15 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   beforeLoad: () => {
-    throw redirect({ to: "/chat" });
+    throw redirect({ to: "/ground-now" });
   },
-  component: ChatScreen,
+  component: GroundNowSection,
+});
+
+const groundNowRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ground-now",
+  component: GroundNowSection,
 });
 
 const chatRoute = createRoute({
@@ -259,8 +261,33 @@ const forgeRoute = createRoute({
   component: ForgeSplashScreen,
 });
 
+const resolutionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/resolution",
+  component: ResolutionTracker,
+});
+
+const therapistRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/therapist",
+  component: TherapistLink,
+});
+
+const villageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/village",
+  component: VillageFeed,
+});
+
+const journalRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/journal",
+  component: SovereigntyJournal,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  groundNowRoute,
   chatRoute,
   scanRoute,
   consultantRoute,
@@ -276,6 +303,10 @@ const routeTree = rootRoute.addChildren([
   conversationsRoute,
   directChatRoute,
   forgeRoute,
+  resolutionRoute,
+  therapistRoute,
+  villageRoute,
+  journalRoute,
 ]);
 
 const router = createRouter({ routeTree });

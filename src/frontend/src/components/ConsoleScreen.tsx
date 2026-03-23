@@ -2,6 +2,7 @@ import { Activity, Terminal, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useActor } from "../hooks/useActor";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import GutPunchSentry from "./GutPunchSentry";
 
 export default function ConsoleScreen() {
   const { identity } = useInternetIdentity();
@@ -139,7 +140,7 @@ export default function ConsoleScreen() {
         </div>
 
         {/* Connection indicator */}
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="mt-4 flex items-center justify-center gap-2 mb-8">
           {connected ? (
             <>
               <Wifi size={14} className="text-stone-400" />
@@ -156,6 +157,9 @@ export default function ConsoleScreen() {
             </>
           )}
         </div>
+
+        {/* GutPunch Sentry Widget */}
+        <GutPunchSentry />
       </div>
     </div>
   );
